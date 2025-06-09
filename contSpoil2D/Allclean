@@ -1,0 +1,17 @@
+echo "Cleaning time directories..."
+rm -rf [1-9]* [0-9][0-9]*
+
+echo "Cleaning postProcessing results..."
+rm -rf postProcessing
+
+echo "Cleaning logs..."
+rm -f log/*.log
+
+echo "Cleaning processors..."
+rm -rf processor*/
+
+echo "Resetting boundary conditions..."
+rm -rf 0
+cp -r 0.orig 0
+
+echo "Done."
