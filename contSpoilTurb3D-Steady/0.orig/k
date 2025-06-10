@@ -1,0 +1,88 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      k;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include        "include/initialConditions"
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform $turbulentKE;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    inlet
+	{
+		type  codedFixedValue;
+		value $internalField;
+		name ablProfile_k;
+		
+		code
+		#{
+		const fvPatch& boundaryPatch = patch();
+		scalarField& field = *this;   
+		
+		scalar Ut = 6.37, hb = 7.77239990234375, z0 = 0.017, ht = 8.91389990234375; //input values
+		scalar kappa = 0.41, Cmu = 0.09;
+		
+		const scalar u_star = (kappa * Ut) / log((ht + z0) / z0);
+		const scalar k_inlet = (u_star * u_star) / sqrt(Cmu);
+		
+		forAll(field, faceI)
+		{
+			field[faceI] = k_inlet;
+		}
+		#};
+			 
+		codeOptions
+		#{
+		-I$(FOAM_SRC)/finiteVolume/lnInclude \
+		-I$(FOAM_SRC)/meshTools/lnInclude
+		#};
+		
+	}
+    
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+
+    container
+    {
+        type            kqRWallFunction;
+        value           $internalField;
+    }
+	
+	spoiler
+    {
+        type            kqRWallFunction;
+        value           $internalField;
+    }
+	
+	ground
+    {
+        type            kqRWallFunction;
+        value           $internalField;
+    }
+
+
+    #include "include/frontBackUpperPatches"
+}
+
+
+// ************************************************************************* //
