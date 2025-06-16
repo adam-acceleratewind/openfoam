@@ -26,13 +26,15 @@ libs
 
 startTime       0;
 stopAt          endTime;
-endTime         .1;
+//At TSR of 3, with Ut of 6.37m/s, and turbine rad of .75m, have ~4 rot/sec
+endTime         1;
 
-//Calculated to be ~2 degrees each time step would be .001
-deltaT          .002;
+//Calculated to be ~1-2 degrees each time step would be .00075-.0015 (round to .001)
+deltaT          .001;
 
 writeControl    timeStep;
-writeInterval   10;
+//Feel free to change. This gives 10 steps
+writeInterval   100;
 
 purgeWrite      0;
 
