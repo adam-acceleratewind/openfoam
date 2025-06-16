@@ -21,17 +21,17 @@ l_b         2.4384; // Container chord
 w_b         6.0960; // Container width, ignored in 2D
 h_b         7.7724; // Container height
 // 5H recommended by Franke et al, 3H recommended by Abu-zidan et al
-// l_u         5.; // Multiplier for domain upstream distance
-l_u         1.;
+l_u         5.; // Multiplier for domain upstream distance
+// l_u         1.;
 // 15H recommended by Franke et al, 3H recommended by Abu-zidan et al
-// l_d         15.; // Multiplier for domain downstream distance
-l_d         1.;
+l_d         15.; // Multiplier for domain downstream distance
+// l_d         1.;
 // 5H recommended by Franke et al, 3H recommended by Abu-zidan et al
-// l_w         5.; // Multiplier for domain width distance, ignored in 2D (5 recommended by Franke et al)
-l_w         1.;
+l_w         5.; // Multiplier for domain width distance, ignored in 2D (5 recommended by Franke et al)
+// l_w         1.;
 // 6H recommended by Franke et al
-// l_h         6.; // Multiplier for domain height distance, 33X is for blockage ratio of 3% in 2D
-l_h         1.;
+l_h         6.; // Multiplier for domain height distance, 33X is for blockage ratio of 3% in 2D
+// l_h         1.;
 // 0.3% recommended by Franke et al, 0.81% recommended by Abu-zidan et al
 
 // Evaluation of Domain Dimensions
