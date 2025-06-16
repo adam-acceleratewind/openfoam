@@ -54,15 +54,15 @@ y3			#calc "$y2 + $y_pad";
 z0          #calc "-$h_b";
 z1          0;
 z2          #calc "$z1 + $z_pad";
-
-nx1         10;   // Number of elements in the upstream direction
-nx2         10;   // Number of elements from front of container to back of container
-nx3         10;  // Number of elements in the downstream direction
-ny1         10;   // Number of elements from container side to domain side
-ny2         25;   // Number of elements along front edge of container
-ny3         10;	  // Number of elements from container side to domain side
+//Check most of these
+nx1         50;   // Number of elements in the upstream direction. Unsure here on how many. At least 50
+nx2         100;   // Number of elements from front of container to back of container. Bit overkill, only need 50 if want to keep cells to .05m
+nx3         100;  // Number of elements in the downstream direction. Also unsure
+ny1         25;   // Number of elements from container side to domain side. 
+ny2         150;   // Number of elements along front edge of container. 120 to keep .05m cell size
+ny3         25;	  // Number of elements from container side to domain side
 nz1         30;   // Number of elements from ground to container top
-nz2         10;  // Number of elements from container top to domain top
+nz2         75;  // Number of elements from container top to domain top. This might need to be higher too
 
 vertices
 (
