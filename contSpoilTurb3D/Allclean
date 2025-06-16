@@ -1,17 +1,11 @@
-echo "Removing time directories..."
-rm -rf [1-9]* [0-9][0-9]*
+#!/usr/bin/env bash
+cd ${0%/*} || exit 1    # run from this directory
 
-echo "Removing post processing results..."
-rm -rf postProcessing
+# Source tutorial clean functions
+. $WM_PROJECT_DIR/bin/tools/CleanFunctions
 
-# echo "Cleaning logs..."
-# rm -rf log/log.*
+rm -rf 0 > /dev/null 2>&1
 
-echo "Removing processor folders..."
-rm -rf processor*/
+cleanCase
 
-echo "Restoring boundary conditions..."
-rm -rf 0
-cp -r 0.orig 0
-
-echo "All clean done."
+# ----------------------------------------------------------------- end-of-file

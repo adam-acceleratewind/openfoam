@@ -1,0 +1,166 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v10 or later                          |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+startFrom       startTime;
+// startFrom       latestTime;
+
+
+libs
+(
+    "libturbinesFoam.so"
+);
+
+startTime       0;
+stopAt          endTime;
+endTime         .1;
+
+//Calculated to be ~2 degrees each time step would be .001
+deltaT          .002;
+
+writeControl    timeStep;
+writeInterval   10;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  6;
+writeCompression off;
+writeResiduals	on;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
+
+
+functions
+{
+
+	velProfiles
+	{
+		#include "sample"
+	}
+	
+	turbVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(0 1.108456 0)
+        	);
+	}
+
+	turbSideVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(0 1.108456 1.5)
+        	);
+	}
+	
+	metVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-27.432 1.108456 0) // Quick estimate that met tower is ~90 ft in front of container
+        	);
+	}
+
+	metSideVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-27.432 1.108456 1.5)
+        	);
+	}
+	
+	contVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-4.6009 1.108456 0)
+        	);
+	}
+
+	contSideVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-4.6009 1.108456 1.5)
+        	);
+	}
+
+	solverInfo
+	{
+		type				solverInfo;
+		libs				("libsutilityFunctionObjects.so");
+		writeControl			timeStep;
+		writeInterval			1;
+
+		fields
+		(
+			U
+			p
+			k
+			omega
+		);
+	}
+
+
+ 	yPlus1
+ 	{
+ 		type            		yPlus;
+ 		libs 				(fieldFunctionObjects);
+ 		
+ 		enabled				true;
+ 		writeControl    		timeStep;
+ 		writeInterval			500;
+ 		
+ 		patches				(container spoiler ground);
+ 	}
+}
+
+// ************************************************************************* //

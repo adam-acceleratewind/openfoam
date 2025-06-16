@@ -1,0 +1,165 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    pcorr
+    {
+        solver          GAMG;
+        tolerance       1e-4;
+        relTol          0;
+        smoother        DICGaussSeidel;
+        cacheAgglomeration no;
+        nCellsInCoarsestLevel 10;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        maxIter         50;
+    }
+
+    p
+    {
+        $pcorr;
+        tolerance       1e-6;
+        relTol          0.01;
+    }
+
+    pFinal
+    {
+        $p;
+        tolerance       1e-6;
+        relTol          0;
+    }
+/*
+    "(U|k|omega)"   //"(U|k|omega|nuTilda|R)"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-6;
+        relTol          0.1;
+    }
+
+    "(U|k|omega)Final"    //"(U|k|omega|nuTilda|R)Final"
+    {
+     	solver      smoothSolver;
+    	smoother    symGaussSeidel;
+    	tolerance   1e-6;
+    	relTol      0;
+    }
+*/
+
+    U
+    {
+        solver      smoothSolver;
+    	smoother    symGaussSeidel;
+        tolerance   1e-6;
+        relTol      0.1;
+    }
+
+    UFinal
+    {
+        $U;
+        tolerance   1e-6;
+        relTol      0;
+    }
+
+    k
+    {
+        solver      smoothSolver;
+        smoother    symGaussSeidel;
+        tolerance   1e-6;
+        relTol      0.1;
+    }
+
+    kFinal
+    {
+        $k;
+        tolerance   1e-6;
+        relTol      0;
+    }
+
+    omega
+    {
+        solver      smoothSolver;
+        smoother    symGaussSeidel;
+        tolerance   1e-6;
+        relTol      0.1;
+    }
+
+    omegaFinal
+    {
+        $k;
+        tolerance   1e-6;
+        relTol      0;
+    }
+
+    nut
+    {
+        solver      smoothSolver;
+        smoother    symGaussSeidel;
+        tolerance   1e-6;
+        relTol      0.1;
+    }
+
+    nutFinal
+    {
+        $nut;
+        tolerance   1e-6;
+        relTol      0;
+    }
+}
+
+PIMPLE
+{
+    correctPhi          no;
+    nOuterCorrectors    1;
+    nCorrectors         2;
+    nNonOrthogonalCorrectors 0;
+    turbOnFinalIterOnly true;
+
+    residualControl
+    {
+         U
+           {
+            tolerance 1e-6;
+            relTol 0;
+            }
+        p
+        {
+            tolerance 5e-4;
+            relTol 0;
+        }
+    }
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p   .99;
+     }
+    equations
+    {
+        "(U|k|omega)"      .95;
+        "(U|k|omega)Final" .95;
+    }
+}
+
+cache
+{
+    grad(U);
+}
+
+// ************************************************************************* //
