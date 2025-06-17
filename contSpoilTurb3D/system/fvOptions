@@ -122,8 +122,8 @@ turbine
                 elementProfiles (NACA0018);
                 elementData // Check here too. THIS NEEDS TO CHANGE, at least in chord and chord mount
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (-1.5 0.05 0.0 0.1012 0.3 0.0)
-                    (-1.5 0.75 0.0 0.1012 0.3 0.0)
+                    (-1.5 0.05 0.0 0.1012 0.5 0.0)
+                    (-1.5 0.75 0.0 0.1012 0.5 0.0)
                 );
             }
 
@@ -149,8 +149,8 @@ turbine
                 elementProfiles (NACA0018);
                 elementData // Check here too. THIS NEEDS TO CHANGE, at least in chord and chord mount
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (-.5 0.05 0.0 0.1012 0.3 0.0)
-                    (-.5 0.75 0.0 0.1012 0.3 0.0)
+                    (-.5 0.05 0.0 0.1012 0.5 0.0)
+                    (-.5 0.75 0.0 0.1012 0.5 0.0)
                 );
             }
 
@@ -177,8 +177,8 @@ turbine
                 elementProfiles (NACA0018);
                 elementData // Check here too. THIS NEEDS TO CHANGE, at least in chord and chord mount
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (.5 0.05 0.0 0.1012 0.3 0.0)
-                    (.5 0.75 0.0 0.1012 0.3 0.0)
+                    (.5 0.05 0.0 0.1012 0.5 0.0)
+                    (.5 0.75 0.0 0.1012 0.5 0.0)
                 );
             }
 
@@ -205,8 +205,8 @@ turbine
                 elementProfiles (NACA0018);
                 elementData // Check here too. THIS NEEDS TO CHANGE, at least in chord and chord mount
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (1.5 0.05 0.0 0.1012 0.3 0.0)
-                    (1.5 0.75 0.0 0.1012 0.3 0.0)
+                    (1.5 0.05 0.0 0.1012 0.5 0.0)
+                    (1.5 0.75 0.0 0.1012 0.5 0.0)
                 );
             }
 
