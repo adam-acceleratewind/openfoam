@@ -35,7 +35,7 @@ turbine
         rotorRadius         0.75;
 
 //Will have to crank this up to 9
-        freeStreamVelocity  (6.7 0 0);
+        freeStreamVelocity  (6.37 0 0);
 
 //Paper said that the model started falling off at TSRs >3 and even before then... Ask
         tipSpeedRatio       3;
@@ -86,14 +86,14 @@ turbine
             {
                 writePerf   true;
                 writeElementPerf true;
-                nElements   75;
+                nElements   50;
                 endEffects  on;
                 elementProfiles (NACA0018);
                 elementData //Will have to double check this to make sure it isn't fully caddywampus
 			    //Also to make sure it's aligned with how ours is set up
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (-1.5 0.75 0.0 0.14 0.5 0.0)
-                    ( 1.5 0.75 0.0 0.14 0.5 0.0)
+                    (-1.5 0.75 0.0 0.135 0.5 0.0)
+                    ( 1.5 0.75 0.0 0.135 0.5 0.0)
                 );
             }
             blade2
@@ -110,34 +110,122 @@ turbine
             }
         }
 
-	//Need to find out how to add more struts since have the four struts for each blade
+	
         struts
         {
+	//First ring
             strut1
             {
                 writePerf   true;
                 nElements   25;
+		//Check here... Are struts also mini NACAs or just strips? (Any harm in modeling them as mini NACAs?)
                 elementProfiles (NACA0018);
-                elementData // Check here too
+                elementData // Check here too. THIS NEEDS TO CHANGE, at least in chord and chord mount
                 ( // axialDistance, radius, azimuth, chord, chordMount, pitch
-                    (0.0 0.05 0.0 0.14 0.3 0.0)
-                    (0.0 0.75 0.0 0.14 0.3 0.0)
+                    (-1.5 0.05 0.0 0.135 0.3 0.0)
+                    (-1.5 0.75 0.0 0.135 0.3 0.0)
                 );
             }
-            strut2
+
+	    strut2
             {
-                $strut1;
-                writePerf   false;
-                azimuthalOffset 120.0;
+               $strut1;
+               writePerf   false;
+               azimuthalOffset 120.0; 
             }
+
             strut3
             {
                 $strut1;
+                writePerf   false;
                 azimuthalOffset 240.0;
+            }
+	//Second ring
+            strut4
+            {
+                writePerf   true;
+                nElements   25;
+		//Check here... Are struts also mini NACAs or just strips? (Any harm in modeling them as mini NACAs?)
+                elementProfiles (NACA0018);
+                elementData // Check here too. THIS NEEDS TO CHANGE, at least in chord and chord mount
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (-.5 0.05 0.0 0.135 0.3 0.0)
+                    (-.5 0.75 0.0 0.135 0.3 0.0)
+                );
+            }
+
+ 	    strut5
+            {
+               $strut4;
+               writePerf   false;
+               azimuthalOffset 120.0; 
+            }
+
+ 	    strut6
+            {
+               $strut4;
+               writePerf   false;
+               azimuthalOffset 240.0; 
+            }
+
+	 //Third ring
+            strut7
+            {
+                writePerf   true;
+                nElements   25;
+		//Check here... Are struts also mini NACAs or just strips? (Any harm in modeling them as mini NACAs?)
+                elementProfiles (NACA0018);
+                elementData // Check here too. THIS NEEDS TO CHANGE, at least in chord and chord mount
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (.5 0.05 0.0 0.135 0.3 0.0)
+                    (.5 0.75 0.0 0.135 0.3 0.0)
+                );
+            }
+
+ 	    strut8
+            {
+               $strut7;
+               writePerf   false;
+               azimuthalOffset 120.0; 
+            }
+
+ 	    strut9
+            {
+               $strut7;
+               writePerf   false;
+               azimuthalOffset 240.0; 
+            }
+	//Annnnd fourth ring
+
+ 	    strut10
+            {
+                writePerf   true;
+                nElements   25;
+		//Check here... Are struts also mini NACAs or just strips? (Any harm in modeling them as mini NACAs?)
+                elementProfiles (NACA0018);
+                elementData // Check here too. THIS NEEDS TO CHANGE, at least in chord and chord mount
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (1.5 0.05 0.0 0.135 0.3 0.0)
+                    (1.5 0.75 0.0 0.135 0.3 0.0)
+                );
+            }
+
+ 	    strut11
+            {
+               $strut10;
+               writePerf   false;
+               azimuthalOffset 120.0; 
+            }
+
+ 	    strut12
+            {
+               $strut10;
+               writePerf   false;
+               azimuthalOffset 240.0; 
             }
         }
 
-//This needs to change too
+
         shaft
         {
             nElements   20;
