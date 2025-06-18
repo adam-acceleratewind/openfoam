@@ -16,39 +16,91 @@ FoamFile
 
 solvers
 {
-    p
+    pcorr
     {
         solver          GAMG;
-        smoother        GaussSeidel;
-        tolerance       1e-7;
+        tolerance       1e-4;
+        relTol          0;
+        smoother        DICGaussSeidel;
+        cacheAgglomeration no;
+        nCellsInCoarsestLevel 10;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        maxIter         50;
+    }
+
+    p
+    {
+        $pcorr;
+        tolerance       1e-6;
         relTol          0.01;
     }
 
-    U
+    pFinal
     {
-        solver          smoothSolver;
-        smoother        GaussSeidel;
-        tolerance       1e-8;
-        relTol          0.1;
-        nSweeps         1;
+        $p;
+        tolerance       1e-6;
+        relTol          0;
+    }
+
+   U
+    {
+        solver      smoothSolver;
+    	smoother    symGaussSeidel;
+        tolerance   1e-6;
+        relTol      0.1;
+    }
+
+    UFinal
+    {
+        $U;
+        tolerance   1e-6;
+        relTol      0;
     }
 
     k
     {
-        solver          smoothSolver;
-        smoother        GaussSeidel;
-        tolerance       1e-8;
-        relTol          0.1;
-        nSweeps         1;
+        solver      smoothSolver;
+        smoother    symGaussSeidel;
+        tolerance   1e-6;
+        relTol      0.1;
+    }
+
+    kFinal
+    {
+        $k;
+        tolerance   1e-6;
+        relTol      0;
     }
 
     omega
     {
-        solver          smoothSolver;
-        smoother        GaussSeidel;
-        tolerance       1e-8;
-        relTol          0.1;
-        nSweeps         1;
+        solver      smoothSolver;
+        smoother    symGaussSeidel;
+        tolerance   1e-6;
+        relTol      0.1;
+    }
+
+    omegaFinal
+    {
+        $k;
+        tolerance   1e-6;
+        relTol      0;
+    }
+
+    nut
+    {
+        solver      smoothSolver;
+        smoother    symGaussSeidel;
+        tolerance   1e-6;
+        relTol      0.1;
+    }
+
+    nutFinal
+    {
+        $nut;
+        tolerance   1e-6;
+        relTol      0;
     }
 }
 
@@ -59,21 +111,23 @@ SIMPLE
 	
 	residualControl
 	{
-		p	1e-6;
 		U	1e-6;
-		"(k|omega|nut)"	1e-6;
+		p	1e-6;
+		k	1e-6;
+		omega	1e-6;
+		nut	1e-6;
 	}
     pRefCell 0;
     pRefValue 0;
 }
-
+/*
 potentialFlow
 {
     nNonOrthogonalCorrectors 10;
     PhiRefCell 0;
     PhiRefValue 0;
 }
-
+*/
 relaxationFactors
 {
     fields
