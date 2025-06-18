@@ -54,7 +54,7 @@ solvers
     "(U|k|omega)Final"    //"(U|k|omega|nuTilda|R)Final"
     {
      	solver      smoothSolver;
-    	smoother    symGaussSeidel;
+    	smoother    GaussSeidel;
     	tolerance   1e-6;
     	relTol      0;
     }
@@ -63,7 +63,7 @@ solvers
     U
     {
         solver      smoothSolver;
-    	smoother    symGaussSeidel;
+    	smoother    GaussSeidel;
         tolerance   1e-6;
         relTol      0.1;
     }
@@ -78,7 +78,7 @@ solvers
     k
     {
         solver      smoothSolver;
-        smoother    symGaussSeidel;
+        smoother    GaussSeidel;
         tolerance   1e-6;
         relTol      0.1;
     }
@@ -93,7 +93,7 @@ solvers
     omega
     {
         solver      smoothSolver;
-        smoother    symGaussSeidel;
+        smoother    GaussSeidel;
         tolerance   1e-6;
         relTol      0.1;
     }
@@ -108,7 +108,7 @@ solvers
     nut
     {
         solver      smoothSolver;
-        smoother    symGaussSeidel;
+        smoother    GaussSeidel;
         tolerance   1e-6;
         relTol      0.1;
     }
