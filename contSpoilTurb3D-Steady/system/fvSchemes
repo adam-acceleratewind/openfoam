@@ -22,6 +22,7 @@ ddtSchemes
 gradSchemes
 {
     default         Gauss linear;
+    grad(p)	    Gauss linear;
     grad(U)         cellLimited Gauss linear 1;
 }
 
@@ -51,6 +52,12 @@ interpolationSchemes
 snGradSchemes
 {
     default         corrected;
+}
+
+fluxRequired
+{
+    default             no;
+    p;
 }
 
 wallDist
