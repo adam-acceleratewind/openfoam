@@ -16,7 +16,6 @@ FoamFile
 
 ddtSchemes
 {
-//This should be Euler?
     default         Euler;
 }
 
@@ -27,20 +26,6 @@ gradSchemes
     grad(U)         cellLimited Gauss linear 1;
 }
 
-//This is divSchemes in tutorial. Need to change from epsilon model. Also just hope that phi works out?
-//divSchemes
-/*{
-    default         none;
-    div(phi,U)      bounded Gauss linearUpwind grad(U);
-    div(phi,k)      bounded Gauss upwind;
-    div(phi,omega) bounded Gauss upwind; //Changed from div(phi,epsilon) bounded Gauss upwind;
-    div(phi,R)      bounded Gauss upwind;
-    div(R)          Gauss linear;
-    div(phi,nuTilda) bounded Gauss upwind;
-    div((nuEff*dev(T(grad(U))))) Gauss linear;
-    div((nuEff*dev2(T(grad(U))))) Gauss linear;
-}
-*/
 
 divSchemes
 {
@@ -57,7 +42,7 @@ divSchemes
 
 laplacianSchemes
 {
-    default         Gauss linear corrected;
+    default         Gauss linear corrected .333;
 }
 
 interpolationSchemes

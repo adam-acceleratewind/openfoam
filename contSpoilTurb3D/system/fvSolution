@@ -16,124 +16,103 @@ FoamFile
 
 solvers
 {
+
     pcorr
     {
         solver          GAMG;
-        tolerance       1e-4;
-        relTol          0;
-        smoother        DICGaussSeidel;
-        cacheAgglomeration no;
-        nCellsInCoarsestLevel 10;
-        agglomerator    faceAreaPair;
-        mergeLevels     1;
-        maxIter         50;
+        tolerance       1e-6;
+        relTol          0.01;
+        smoother        GaussSeidel;
+	maxIter		50;
     }
 
     p
     {
         $pcorr;
-        tolerance       1e-6;
-        relTol          0.01;
+        tolerance       1e-7;
+	relTol          0.01;
     }
 
     pFinal
     {
         $p;
-        tolerance       1e-6;
         relTol          0;
     }
-/*
-    "(U|k|omega)"   //"(U|k|omega|nuTilda|R)"
-    {
-        solver          smoothSolver;
-        smoother        symGaussSeidel;
-        tolerance       1e-6;
-        relTol          0.1;
-    }
 
-    "(U|k|omega)Final"    //"(U|k|omega|nuTilda|R)Final"
+   U
     {
-     	solver      smoothSolver;
+        solver      GAMG;
     	smoother    GaussSeidel;
-    	tolerance   1e-6;
-    	relTol      0;
-    }
-*/
-
-    U
-    {
-        solver      smoothSolver;
-    	smoother    GaussSeidel;
-        tolerance   1e-6;
+        tolerance   1e-5;
         relTol      0.1;
+	maxIter		50;
     }
 
     UFinal
     {
         $U;
-        tolerance   1e-6;
         relTol      0;
     }
 
     k
     {
-        solver      smoothSolver;
+        solver      GAMG;
         smoother    GaussSeidel;
-        tolerance   1e-6;
+        tolerance   1e-5;
         relTol      0.1;
+	maxIter		50;
     }
 
     kFinal
     {
         $k;
-        tolerance   1e-6;
         relTol      0;
     }
 
     omega
     {
-        solver      smoothSolver;
+        solver      GAMG;
         smoother    GaussSeidel;
-        tolerance   1e-6;
+        tolerance   1e-5;
         relTol      0.1;
+	maxIter		50;
     }
 
     omegaFinal
     {
-        $k;
-        tolerance   1e-6;
+        $omega;
         relTol      0;
     }
 
     nut
     {
-        solver      smoothSolver;
+        solver      GAMG;
         smoother    GaussSeidel;
-        tolerance   1e-6;
+        tolerance   1e-5;
         relTol      0.1;
+	maxIter		50;
     }
 
     nutFinal
     {
         $nut;
-        tolerance   1e-6;
         relTol      0;
     }
+
 }
 
 PIMPLE
 {
-    correctPhi          no;
-    nOuterCorrectors    1;
+    nOuterCorrectors    50;
     nCorrectors         2;
-    nNonOrthogonalCorrectors 0;
-    turbOnFinalIterOnly true;
+    nNonOrthogonalCorrectors 1;
+    turbOnFinalIterOnly no;
 
     residualControl
     {
          U
            {
-            tolerance 1e-6;
+            tolerance 1e-5;
             relTol 0;
             }
         p
@@ -141,6 +120,7 @@ PIMPLE
             tolerance 5e-4;
             relTol 0;
         }
+
     }
 }
 
@@ -148,12 +128,13 @@ relaxationFactors
 {
     fields
     {
-        p   .99;
+        p   .3;
+	pFinal 1;
      }
     equations
     {
-        "(U|k|omega)"      .95;
-        "(U|k|omega)Final" .95;
+        "(U|k|omega)"      .3;
+        "(U|k|omega)Final" 1;
     }
 }
 
