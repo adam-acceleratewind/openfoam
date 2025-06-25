@@ -51,18 +51,19 @@ turbine
             dynamicStallModel   LeishmanBeddoesSGC;
             LeishmanBeddoesSGCCoeffs
             {
-	//NOTE: The comments after describing the variables are from ChatGPT. They could be wrong but I couldn't find a list of variable meanings on the tutorial
-	//In general, have not changed them but might need to in model
-                Tp          1.7;        // Default = 1.7 //Time constant for pitching moment
-                Tf          3.0;        // Default = 3.0 //Time constant for normal force or circulatory lift response
-                TAlpha      6.25;	//Time constant for angle of attack lag
-                alphaDS0DiffDeg 3.8;	//Difference (in degrees) between static stall AoA and dynamic stall AoA
-                r0          0.01;	//Empirical delay parameter
-                Tv          11;		//Time constant for vortex lift evolution
-                Tvl         8.7;	//Time constant for vortex lift delay
-                B1          0.5;	//Empirical constant used in unsteady separation modeling (e.g. Boundary Layer)
-                eta         0.98;	//Efficiency Factor for flow reattachment of nonlinear recovery
-                E0          0.16;	//Initial value of non-circulatory (added mass) effect
+	//NOTE: The parameters are found from the dictionary at beginning of "The Beddoes-Leishman Dynamic Stall Model: .." Melani et al 2024
+	//Checked values for the model were found from "A modified Leishman–Beddoes model for airfoil sections undergoing dynamic stall at low Reynolds numbers" Boutett et al 2020
+	//and from "A Modified Dynamic Stall Model for Low Mach Numbers" Sheng et al 2008
+                Tp          1.7;        // Checked! (Boutet)//Leading Edge Pressure Peak Time Constant
+                Tf          8.2;        // Checked! (Boutet)//Unsteady Boundary Layer Time Constant
+                TAlpha      6.22;	// Checked! (Sheng) // Time constant for variation in angle of attack
+                alphaDS0DiffDeg 2.78;	// Checked! (Sheng) //The alphadso is 17.46. Static 14.68 diff of critical angle for dynamic/static stall
+                r0          0.01;	// ? pitch rate. This should be close enough. Ranges .08-.01 it seems
+                Tv          4;		// Checked! (Boutet)//Leading edge vortex decay constant
+                Tvl         12;		// Checked! (Boutet)//Non dimensional LEV (leading edge vortex) convection time over the airfoil chord
+                B1          0.5;	// ? Indicial function coeff. can range from .14-.68. Boutet said .010 for NACA0018. Unsure, left default
+                eta         0.98;	// ? Efficiency Factor > this personalized to our own turbine
+                E0          0.16;	// ? cavity factor > this personalized to our own turbine
                 // Uncomment lists below to disable automatic calculations
                 // ReList      (4e4 8e4 1.6e5 3.6e5 7e5 1e6 2e6 5e6);
                 // CNAlphaList (3.2397 4.7255 5.2274 5.6084 5.8048 5.8904 5.9625 6.2771);
