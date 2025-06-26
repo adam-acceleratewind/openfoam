@@ -1,0 +1,91 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale   1;
+
+
+//Vesta Building Dimensions. Oriented +x in windward direction. +y up. +z to the right
+		//X: (0  100)
+		//Y: (0  16.15)
+		//Z: (0  253.32)
+
+l_b	100.;
+h_b 	16.15;
+w_b 	253.32;
+
+// 5H recommended by Franke et al, 3H recommended by Abu-zidan et al
+l_u         5.; // Multiplier for domain upstream distance
+
+// 15H recommended by Franke et al, 3H recommended by Abu-zidan et al
+//l_d         15.; // Multiplier for domain downstream distance
+//No length downstream as modeling as forward step
+
+// 5H recommended by Franke et al, 3H recommended by Abu-zidan et al
+l_s         5.; // Multiplier for domain width distance, ignored in 2D (5 recommended by Franke et al)
+
+// 6H recommended by Franke et al
+l_h         6.; // Multiplier for domain height distance
+
+// Evaluation of Domain Dimensions. Using h_b as length
+x_up        #calc "$h_b * $l_u";
+x_down      #calc "$h_b * 0"; //End of structure is at back of mesh
+y_pad       #calc "$h_b * $l_h";
+z_pad       #calc "$h_b * $l_s";
+	
+
+//Evaluation of Vertex Positions
+x0	#calc "-$x_up";
+x1	#calc "$l_b + $x_down";
+
+y0	#calc "0";
+y1	#calc "$h_b + $y_pad";
+
+z0	#calc "-$z_pad";
+z1	#calc "$w_b + $z_pad";
+
+vertices
+(
+    ($x0  $y0  $z0)  	//front-bottom-left  	0
+    ($x0  $y0  $z1)  	//front-bottom-right 	1
+    ($x1  $y0  $z1) 	//back-bottom-right 	2
+    ($x1  $y0  $z0)  	//back-bottom-left    	3
+    ($x0  $y1  $z0)    	//front-top-left    	4
+    ($x0  $y1  $z1)   	//front-top-right   	5
+    ($x1  $y1  $z1)  	//back-top-right     	6
+    ($x1  $y1  $z0)   	//back-top-left      	7
+);
+
+edges
+(
+);
+
+blocks (
+    hex (0 1 2 3 4 5 6 7) (100 50 200) simpleGrading (1 1 1)
+);
+
+edges ( );
+boundary (
+    inlet  { type patch; faces ((0 1 5 4)); }
+    outlet { type patch; faces ((2 3 7 6)); }
+    top    { type patch; faces ((4 5 6 7)); }
+    ground { type wall;  faces ((0 3 2 1)); }
+    leftSide  { type patch; faces ((0 4 7 3)); }
+    rightSide { type patch; faces ((1 2 6 5)); }
+);
+mergePatchPairs ( );
+
+
+// ************************************************************************* //

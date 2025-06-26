@@ -1,0 +1,17 @@
+There is a slight slope to the roof, rises from 14.326m to 15.608m over a distance of 123.165m. 
+This is a slope of 0.01041 m/m
+This document is to determine where the turbines are approximately located in order to keep the swept area of the turbine at a consistent height
+Turb is 2.217m above highest roof point (with 1.5m turbine. Leave room for spoiler)
+
+Turb loc:
+For 5m away from edge (highest edge 17m away):
+	Highest roof point (determines spoiler/turbine loc) - 14.503m
+	Turb height - 16.720m
+
+For 55.5m away (highest edge 67.5m away):
+	Highest roof point - 15.029m
+	Turb height - 17.246m
+
+For 105m away (highest edge 117m away): 
+	Highest roof point - 15.544m
+	Turb height - 17.761m

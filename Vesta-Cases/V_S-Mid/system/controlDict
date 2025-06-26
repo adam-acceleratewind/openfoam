@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//- To be more comparable to v2406 bug-fix branch disable the
+//- near-wall distance fix (see v2412 release notes about 'Wall distance')
+//OptimisationSwitches
+//{
+//    useCombinedWallPatch    0;
+//}
+
+application     simpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         12;
+
+deltaT          .1;
+
+writeControl    timeStep;
+
+writeInterval   20;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+writeResiduals on;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+libs ();
+
+functions
+{
+  avgTurbineVel
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbLoc;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   20;
+    }
+
+
+ 	yPlus1
+ 	{
+ 		type            		yPlus;
+ 		libs 				(fieldFunctionObjects);
+ 		
+ 		enabled				true;
+ 		writeControl    		timeStep;
+ 		writeInterval			20;
+ 		
+ 		patches				(building spoiler ground);
+ 	}
+}
+}
+
+
+// ************************************************************************* //
