@@ -10,4 +10,5 @@ cp -rf 0.orig 0
 runApplication blockMesh
 runApplication surfaceFeatureExtract
 runApplication snappyHexMesh -overwrite
+runApplication topoSet
 runApplication simpleFoam
