@@ -146,7 +146,7 @@ addLayersControls
      	   building
 		{nSurfaceLayers 15;}
 
-	   bottom 
+	   ground 
 		{nSurfaceLayers 10;}
 	  }
      
