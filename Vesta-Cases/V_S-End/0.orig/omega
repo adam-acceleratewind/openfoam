@@ -43,7 +43,7 @@ boundaryField
 		{
 			const scalar y = Cf[faceI].y();
 			const scalar u_star = (kappa * Ut) / log((ht + z0) / z0);
-			const scalar omega_inlet = u_star / (kappa * (y + hb + z0));
+			const scalar omega_inlet = u_star / (kappa * (y + z0));
 			field[faceI] = omega_inlet;
 		}
 		#};
