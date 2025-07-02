@@ -1,0 +1,211 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale   1;
+H	5;
+
+l_u	10;
+l_d	20;
+h_u	7;
+
+
+x_up	#calc "-$l_u * $H";
+x_p	#calc "1.5 * $H";
+x_l	#calc "3 * $H";
+x_d	#calc "$x_l + $l_d * $H";
+H_p	#calc ".088 * $x_l + $H"; //.35 for 35 degrees (I swear this is trig). .088 for 10 degrees
+y_up	#calc "$h_u * $H";
+
+
+
+vertices
+(
+	($x_up	0	0) //0
+	(0      0	0) //1
+	(0	$H	0) //2
+	($x_p	$H_p	0) //3. This is location of peak. Change the y value from H to H_p to change peak
+	($x_l	$H	0) //4
+	($x_l	0	0) //5
+	($x_d 	0	0) //6
+	($x_d	$y_up	0) //7
+	($x_up	$y_up	0) //8
+	($x_up	$H	0) //9
+	($x_d	$H	0) //10
+	(0	$y_up	0) //11
+	($x_l	$y_up	0) //12
+
+//Mirror for 1 cell depth
+	($x_up	0	1) //13 //0
+	(0      0	1) //14 //1
+	(0	$H	1) //15 //2
+	($x_p	$H_p	1) //16. //3 This is location of peak. Change the y value from H to H_p to change peak
+	($x_l	$H	1) //17 //4
+	($x_l	0	1) //18 //5
+	($x_d 	0	1) //19 //6
+	($x_d	$y_up	1) //20 //7
+	($x_up	$y_up	1) //21 //8
+	($x_up	$H	1) //22 //9
+	($x_d	$H	1) //23 //10
+	(0	$y_up	1) //24 //11
+	($x_l	$y_up	1) //25 //12
+
+//Added later because goofed
+	($x_p	$y_up	0) //26 //13
+	($x_p	$y_up	1) //27 //13
+);
+
+
+
+blocks
+(
+    // Block 0
+    hex (0 1 2 9 13 14 15 22)
+    (40 20 1)
+    simpleGrading (.1 1 1)
+
+    // Block 1
+    hex (9 2 11 8 22 15 24 21)
+    (40 50 1)
+    simpleGrading (.1 6 1)
+
+    // Block 2 (the peak- upwind)
+    hex (2 3 26 11 15 16 27 24)
+    (40 50 1)
+    simpleGrading (1 6 1)
+
+    // Block 3 (the peak - downwind)
+    hex (3 4 12 26 16 17 25 27)
+    (40 50 1)
+    simpleGrading (1 6 1)
+
+    // Block 4
+    hex (4 10 7 12 17 23 20 25)
+    (40 50 1)
+    simpleGrading (10 6 1)
+
+    // Block 5
+    hex (5 6 10 4 18 19 23 17)
+    (40 20 1)
+    simpleGrading (10 1 1)
+
+
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 13 22 9)
+	    (9 22 21 8)
+        );
+    }
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (19 6 10 23)
+            (23 10 7 20)
+        );
+    }
+/*
+    lowerWallStartup
+    {
+        type symmetryPlane;
+        faces
+        (
+            ()
+        );
+    }
+    upperWallStartup
+    {
+        type symmetryPlane;
+        faces
+        (
+            ()
+        );
+    }
+*/
+    top
+    {
+        type patch;
+        faces
+        (
+            (21 24 11 8)
+            (24 27 26 11)
+	    (27 25 12 26)
+            (25 20 7 12)
+        );
+    }
+    ground
+    {
+        type wall;
+        faces
+        (
+            (0 1 14 13)
+            (5 6 18 19)
+        );
+    }
+
+    building
+    {
+        type wall;
+        faces
+        (
+            (1 14 15 2)
+            (2 15 16 3)
+            (3 16 17 4)
+            (4 17 18 5)
+        );
+    }
+
+    front
+    {
+        type empty;
+        faces
+        (
+            (13 14 15 22)
+            (22 15 24 21)
+            (15 16 27 24)
+            (16 17 25 27)
+            (17 23 20 25)
+            (18 19 23 17)
+        );
+    }
+    back
+    {
+        type empty;
+        faces
+        (
+            (0 9 2 1)
+	    (9 8 11 2)
+	    (2 11 26 3)
+	    (3 26 12 4)
+	    (4 12 7 10)
+	    (5 4 10 6)
+        );
+    }
+);
+
+
+// ************************************************************************* //

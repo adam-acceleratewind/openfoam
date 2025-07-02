@@ -1,0 +1,87 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      omega;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 -1 0 0 0 0];
+
+internalField   uniform 181728;
+
+boundaryField
+{
+    inlet
+    {
+		type  codedFixedValue;
+		value $internalField;
+		name ablProfile_omega;
+		
+		code
+		#{
+		const fvPatch& boundaryPatch = patch();
+		const vectorField& Cf = boundaryPatch.Cf();
+		scalarField& field = *this;   
+		
+		scalar Ut = 8, hb = 5, z0 = 0.017; //input values
+		scalar kappa = 0.41;
+		
+		forAll(field, faceI)
+		{
+			const scalar y = Cf[faceI].y();
+			const scalar u_star = (kappa * Ut) / log((hb + z0) / z0);
+			const scalar omega_inlet = u_star / (kappa * (y + hb + z0));
+			field[faceI] = omega_inlet;
+		}
+		#};
+			 
+		codeOptions
+		#{
+		-I$(FOAM_SRC)/finiteVolume/lnInclude \
+		-I$(FOAM_SRC)/meshTools/lnInclude
+		#};
+    }
+
+    outlet
+    {
+        type            zeroGradient;
+    }
+
+    top
+    {
+        type            zeroGradient;
+    }
+
+    building
+    {
+        type            omegaWallFunction;
+        value           $internalField;
+    }
+
+    ground
+    {
+        type            atmOmegaWallFunction;
+        value           $internalField;
+	z0		uniform 0.017;
+	kappa		0.41;
+	Cmu		0.09;
+    }
+
+
+    "(front|back)"
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //
