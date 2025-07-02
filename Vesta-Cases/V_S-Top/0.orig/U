@@ -40,8 +40,8 @@ boundaryField
 		
 		forAll(Cf, faceI)
 		{
-			const scalar y = Cf[faceI].y();
-			const scalar Ux = (Ut / log( (ht+z0) / z0)) * log( (y+z0) / z0);
+			const scalar z = Cf[faceI].z();
+			const scalar Ux = (Ut / log( (ht+z0) / z0)) * log( (z+z0) / z0);
 			field[faceI] = vector(Ux, 0.0, 0.0);	 
 		} 
 		#};
