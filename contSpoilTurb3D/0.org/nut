@@ -54,7 +54,7 @@ boundaryField
 	
 	spoiler
     {
-        type            omegaWallFunction;
+        type            nutkWallFunction;
         value           $internalField;
     }
 
