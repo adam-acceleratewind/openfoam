@@ -4,21 +4,24 @@ cd ${0%/*} || exit 1    # run from this directory
 # Source tutorial run functions
 . $WM_PROJECT_DIR/bin/tools/RunFunctions
 
-# Copy initial conditions
-cp -rf 0.org 0
+# Create log folders
+mkdir -p log
 
-runApplication blockMesh
-runApplication snappyHexMesh -overwrite
+# Setting swept area
 runApplication topoSet
+mv log.topoSet log/topoSet.log
 
-if [ "$1" = "-parallel" ]
-    then
-    nProc=$(getNumberOfProcessors)
-    runApplication decomposePar
-    ls -d processor* | xargs -I {} rm -rf ./{}/0
-    ls -d processor* | xargs -I {} cp -r 0.org ./{}/0
-    app=$(getApplication)
-    mpirun -np $nProc --oversubscribe $app -parallel > log.$app
-else
-    runApplication pimpleFoam
-fi
+# Decompose the mesh domain for parallelization of meshing
+runApplication decomposePar -constant
+mv log.decomposePar log/decomposePar.log
+
+# Run the case
+runApplication mpiexec -n 100 pimpleFoam -parallel
+mv log.mpiexec log/pimpleFoam.log
+
+# Decompose the mesh domain for parallelization
+runApplication reconstructPar
+mv log.reconstructPar log/reconstructPar.log
+
+# Remove the processor folders
+rm -rf processor*/
