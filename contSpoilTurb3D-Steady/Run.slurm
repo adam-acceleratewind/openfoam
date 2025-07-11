@@ -18,7 +18,7 @@ ml openfoam/v2406-craympich-gcc
 
 ./Prerun
 
-## ./Postrun
+./Postrun
 
 echo "------ End of the job ------"
 
