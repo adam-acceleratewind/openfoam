@@ -60,7 +60,7 @@ geometry
         type searchableCylinder;
         point1 (0 1.108456 -1.75);
         point2 (0 1.108456 1.75);
-        radius 2;       
+        radius 1;       
     }
 }
 
@@ -68,7 +68,7 @@ geometry
 castellatedMeshControls
 {
     locationInMesh (-1 0 0.5);
-    maxLocalCells 1000000;    // Limit the number of cells per processor
+    maxLocalCells 3000000;    // Limit the number of cells per processor
     maxGlobalCells 30000000;  // Limit the total number of cells
     minRefinementCells 10;   // Minimum number of cells to refine
     nCellsBetweenLevels 5;   // Smooth refinement between levels
@@ -91,11 +91,11 @@ castellatedMeshControls
     {
         container
         {
-            level (3 3);  // Minimum and maximum refinement levels
+            level (2 2);  // Minimum and maximum refinement levels
         }
 		spoiler
         {
-            level (4 4);  // Minimum and maximum refinement levels
+            level (3 3);  // Minimum and maximum refinement levels
         }
     }
 
