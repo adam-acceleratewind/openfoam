@@ -16,7 +16,7 @@ runApplication decomposePar
 mv log.decomposePar log/decomposePar.log
 
 # Run the case
-runApplication mpirun -np 8 simpleFoam -parallel
+runApplication mpirun -np 100 simpleFoam -parallel
 mv log.mpirun log/mpirun.log
 
 # Decompose the mesh domain for parallelization
