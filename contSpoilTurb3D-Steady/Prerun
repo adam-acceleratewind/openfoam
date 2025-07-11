@@ -25,7 +25,7 @@ runApplication decomposePar -constant
 mv log.decomposePar log/decomposeParMesh.log
 
 # Parallelization of meshing
-runApplication mpirun -n 8 snappyHexMesh -overwrite -parallel 
+runApplication mpirun -n 100 snappyHexMesh -overwrite -parallel 
 mv log.mpirun log/mpirunMesh.log
 
 # Reconstruct mesh
