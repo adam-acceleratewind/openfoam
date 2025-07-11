@@ -26,33 +26,8 @@ boundaryField
 	
 	inlet
 	{		
-		type  codedFixedValue;
+		type  fixedValue;
 		value $internalField;
-		name ablProfile_omega;
-		
-		code
-		#{
-		const fvPatch& boundaryPatch = patch();
-		const vectorField& Cf = boundaryPatch.Cf();
-		scalarField& field = *this;   
-		
-		scalar Ut = 6.37, hb = 7.77239990234375, z0 = 0.017, ht = 8.91389990234375; //input values
-		scalar kappa = 0.41;
-		
-		forAll(field, faceI)
-		{
-			const scalar y = Cf[faceI].y();
-			const scalar u_star = (kappa * Ut) / log((ht + z0) / z0);
-			const scalar omega_inlet = u_star / (kappa * (y + hb + z0));
-			field[faceI] = omega_inlet;
-		}
-		#};
-			 
-		codeOptions
-		#{
-		-I$(FOAM_SRC)/finiteVolume/lnInclude \
-		-I$(FOAM_SRC)/meshTools/lnInclude
-		#};
 		
 	}
 

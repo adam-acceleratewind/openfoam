@@ -40,12 +40,12 @@ boundaryField
         type            zeroGradient;
     }
 	
-	container
+    container
     {
         type            zeroGradient;
     }
 	
-	spoiler
+    spoiler
     {
         type            zeroGradient;
     }

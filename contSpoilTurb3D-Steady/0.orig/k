@@ -27,7 +27,7 @@ boundaryField
     inlet
 	{
 		type  codedFixedValue;
-		value $internalField;
+		value  uniform .375;
 		name ablProfile_k;
 		
 		code
@@ -53,6 +53,11 @@ boundaryField
 		-I$(FOAM_SRC)/meshTools/lnInclude
 		#};
 		
+		codeLibs
+ 		   #{
+  		      -lOpenFOAM \
+   		     -lfiniteVolume
+   		    #};
 	}
     
     outlet

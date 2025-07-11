@@ -28,61 +28,66 @@ boundaryField
 	{
 		type  codedFixedValue;
 		value $internalField;
-		name ablProfile;
+		name UProfile;
 		
 		code
 		#{
-		const fvPatch& boundaryPatch = patch();
-		const vectorField& Cf = boundaryPatch.Cf();
+		const scalar Ut = 6.37;
+		const scalar hb = 7.77239990234375;
+		const scalar z0 = 0.017;
+		const scalar ht = 8.91389990234375; //input values
+
+		const vectorField& Cf = patch().Cf();
 		vectorField& field = *this;   
-		
-		scalar Ut = 6.37, hb = 7.77239990234375, z0 = 0.017, ht = 8.91389990234375; //input values
 		
 		forAll(Cf, faceI)
 		{
-			const scalar y = Cf[faceI].y();
-			const scalar Ux = (Ut / log( (ht+z0) / z0)) * log( (y+hb+z0) / z0);
-			field[faceI] = vector(Ux, 0.0, 0.0);	 
+			scalar y = Cf[faceI].y() ;
+			scalar Ux = (Ut / log( (ht+z0) / z0)) * log((y + hb + z0) / z0);
+			field[faceI] = vector( Ux, 0.0 , 0.0 );	 
 		} 
 		#};
 			 
 		codeOptions
-		#{
+		#{ 
 		-I$(FOAM_SRC)/finiteVolume/lnInclude \
 		-I$(FOAM_SRC)/meshTools/lnInclude
 		#};
-		
-		// codeInclude
-		// #{
-		// #include "fvCFD.H"
-		// #include <cmath>
-		// #include <iostream>
-		// #};
+
+		codeLibs
+  		  #{
+   		     -lOpenFOAM \
+   		     -lfiniteVolume
+  		  #};
+
+		codeInclude
+		#{
+		#include "fvCFD.H"
+		#include <cmath>
+		#include <iostream>
+		#};
 	}
 
-    outlet
+    	outlet
     {
         type            inletOutlet;
         inletValue      uniform (0 0 0);
         value           $internalField;
     }
 
-    container
+    	container
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+        type           noSlip;
     }
 	
 	spoiler
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+        type            noSlip;
     }
 	
 	ground
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+        type            noSlip;
     }
 	
 

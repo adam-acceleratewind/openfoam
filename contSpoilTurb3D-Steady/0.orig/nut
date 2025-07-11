@@ -52,10 +52,10 @@ boundaryField
         value           uniform 0;
     }
 	
-	spoiler
+    spoiler
     {
-        type            omegaWallFunction;
-        value           $internalField;
+        type            nutkWallFunction;
+        value           uniform 0;
     }
 
 
@@ -63,7 +63,7 @@ boundaryField
     {
         type 			atmNutkWallFunction;
 		z0				uniform 0.017;
-		value			uniform 0.017;
+		value			uniform 0;
 		kappa			0.41;
 		Cmu				0.09;
     }
