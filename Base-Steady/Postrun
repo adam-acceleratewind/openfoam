@@ -1,0 +1,26 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+application="$(getApplication)"
+
+mkdir -p log
+
+# Decompose the mesh domain for parallelization
+runApplication decomposePar
+mv log.decomposePar log/decomposePar.log
+
+# Run the case
+runApplication mpiexec -n 100 simpleFoam -parallel
+mv log.mpiexec log/mpiexec.log
+
+# Decompose the mesh domain for parallelization
+runApplication reconstructPar
+mv log.reconstructPar log/reconstructPar.log
+
+# Remove the processor folders
+rm -rf processor*/
+
+#------------------------------------------------------------------------------
