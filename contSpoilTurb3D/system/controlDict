@@ -24,15 +24,16 @@ libs
     "libturbinesFoam.so"
 );
 
-startTime       0;
+startTime       500;
 stopAt          endTime;
-endTime         1;
+endTime         505;
 
 adjustTimeStep	yes;
-maxCo		3;
+maxCo		2;
 maxDeltaT	.002;
 //Calculated to be ~2 degrees each time step would be .001
 deltaT          .001;
+
 
 writeControl    adjustable;
 writeInterval   .025;
