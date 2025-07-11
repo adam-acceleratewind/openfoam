@@ -87,7 +87,7 @@ turbine
             {
                 writePerf   true;
                 writeElementPerf true;
-                nElements   50;
+                nElements   30;
                 endEffects  on;
                 elementProfiles (NACA0018);
                 elementData //Will have to double check this to make sure it isn't fully caddywampus
@@ -229,7 +229,7 @@ turbine
 
         shaft
         {
-            nElements   20;
+            nElements   10;
             elementProfiles (cylinder);
             elementData
             ( // axialDistance, diameter
@@ -264,7 +264,7 @@ turbine
            
             cylinder
             {
-                data ((-180 0 1.1)(180 0 1.1));
+                data ((-180 0 1.108)(180 0 1.108));
             }
 
          }
