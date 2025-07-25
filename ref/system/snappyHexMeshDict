@@ -1,0 +1,229 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+//Calculations to parameterize snappyHexMesh
+#include 	"aspectRatio"
+buildingEdge 		#calc "$width * $scalingFactor * .5";
+buildingEdgeL		#calc "-$buildingEdge";
+buildingEdgeBuffer	#calc "$buildingEdge + 10";
+buildingEdgeBackBuffer	#calc "-$buildingEdgeBuffer";
+spoilerEdge		#calc "$buildingEdge - 3";
+spoilerEdgeBack		#calc "-$spoilerEdge";
+spoilerEdgeBuffer	#calc "$spoilerEdge +1";
+spoilerEdgeBackBuffer	#calc "-$spoilerEdgeBuffer";
+ground			#calc "-$height * $scalingFactor";
+buildingBackEdge	#calc "$length * $scalingFactor";
+cavityRegion		#calc "$buildingBackEdge + 40";
+cavityRegionBuffer	#calc "$cavityRegion + 30";
+
+// Which of the steps to run
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+mergeTolerance 1e-6;
+
+// Geometry. Definition of all surfaces. All surfaces are of class
+// searchableSurface.
+// Surfaces are used
+// - to specify refinement for any mesh cell intersecting it
+// - to specify refinement for any mesh cell inside/outside/near
+// - to 'snap' the mesh boundary to the surface
+geometry
+{
+    spoiler
+    {
+        type triSurfaceMesh;
+        file "spoiler.stl";
+    }
+ 
+	refinementBoxBig
+	{
+		type searchableBox;
+		// x-dimension is to start 15 meters back from level 2 refine
+		// y-dimension is to start at ground
+		min (-30 $ground $buildingEdgeBackBuffer);
+		// x-dimension is to cover 30m back from cavity region
+		// y-dimension is to cover 20m above building
+		max ($cavityRegionBuffer 20 $buildingEdgeBuffer);
+	}
+
+	refinementBoxOuter
+	{
+		type searchableBox;
+		// x-dimension is to start at incident recirculation zone
+		// y-dimension is to start at ground
+		min (-15 $ground $buildingEdgeL);
+		// x-dimension is to cover cavity region
+		// y-dimension is to cover rotor and an additional 1.5 m above
+		max ($cavityRegion 5.25 $buildingEdge);
+	}
+	
+	refinementBoxInner
+	{
+		type searchableBox;
+		// x-dimension is to start at start of spoiler
+		// y-dimension is to start at bottom of spoiler
+		min (-1 -3 $spoilerEdgeBackBuffer);
+		// x-dimension is to cover end of spoiler
+		// y-dimension is to cover top of spoiler
+		max (3.5 1 $spoilerEdgeBuffer);
+	}
+};
+
+castellatedMeshControls
+{
+	maxLocalCells 1000000;
+    	maxGlobalCells 35000000;
+    	minRefinementCells 10;
+    	nCellsBetweenLevels 1; //was 2
+   	 features
+   	 (
+
+	  {
+            file "spoiler.eMesh";
+            level 2;
+      	  }
+ 	   );
+	// Surface based refinement
+    	// ~~~~~~~~~~~~~~~~~~~~~~~~
+	
+  	  // Specifies two levels for every surface. The first is the minimum level,
+  	 // every cell intersecting a surface gets refined up to the minimum level.
+   	 // The second level is the maximum level. Cells that 'see' multiple
+  	  // intersections where the intersections make an
+   	 // angle > resolveFeatureAngle get refined up to the maximum level.
+
+    	refinementSurfaces
+  	  {
+	spoiler
+      	  {
+            // Surface-wise min and max refinement level
+            level (4 4);          
+	 }
+	building
+      	  {
+            // Surface-wise min and max refinement level
+            level (4 4);          
+	 }
+
+	  }
+
+	refinementRegions
+  	  {
+       		refinementBoxBig
+      		 {
+           	 mode inside;
+           	 levels ((1e15 1));
+     		 }
+
+       		refinementBoxOuter
+       		{
+            	mode inside;
+            	levels ((1e15 2)); //Changed from 1 because of the blockMesh
+       		}
+	   
+       		refinementBoxInner
+       		{
+           	 mode inside;
+            	levels ((1e15 2)); //This can be changed to 3 if spoiler is having a hard time forming
+       		}
+          }
+	resolveFeatureAngle 30;
+	planarAngle 30;
+	allowFreeStandingZoneFaces true;
+	locationInMesh (-10 10 -10);
+};
+
+
+  
+
+// Settings for the snapping.
+snapControls
+{
+    nSmoothPatch 10;
+    tolerance 1.0;
+
+    nSolveIter 100;
+    nRelaxIter 10;
+   
+    nFeatureSnapIter 100;
+};
+
+addLayersControls
+{
+	relativeSizes true;
+
+  	  layers
+  	  {
+
+     	   spoiler
+		{nSurfaceLayers 25;}
+
+     	   building
+		{nSurfaceLayers 20;}
+
+	   ground 
+		{nSurfaceLayers 15;}
+
+	  }
+     
+   
+
+    expansionRatio 1.15;
+    finalLayerThickness 0.4;
+    minThickness 0.15;
+    nGrow 1;
+
+    featureAngle 170;
+    nRelaxIter 20;
+    nSmoothSurfaceNormals 3;
+    nSmoothNormals 1;
+    nSmoothThickness 10;
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.6;
+    minMedianAxisAngle 130;
+    nBufferCellsNoExtrude 0;
+    nLayerIter 80;
+    minMedialAxisAngle 80;
+    slipFeatureAngle 30;
+
+    // Extra Controls
+	concaveAngle 30;
+	mergePatchFacesAngle 60;
+	layerTerminationAngle -180;
+
+};
+
+meshQualityControls
+{
+    maxNonOrtho 75;
+    maxBoundarySkewness 4;
+    maxInternalSkewness 4;
+    maxConcave 80;
+    minVol 1e-13;
+    minTetQuality -1e+30;
+    minArea -1;
+    minTwist 0.02;
+    minDeterminant 0.001;
+    minFaceWeight 0.05;
+    minVolRatio 0.01;
+    minTriangleTwist -1;
+
+    // Advanced: limit maximum cells with bad quality
+    nSmoothScale 4;
+    errorReduction 0.75;
+};
+

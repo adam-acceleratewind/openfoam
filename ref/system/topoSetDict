@@ -1,0 +1,296 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include	"aspectRatio"
+buildingEdge 		#calc "$width * $scalingFactor * .5";
+spoilerEdge		#calc "$buildingEdge - 3";
+spoilerEdgeBack		#calc "-$spoilerEdge";
+
+actions
+(
+//Creates topology for the area over the spoiler
+    {
+        name    faceZoneSource_turb;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 $spoilerEdgeBack);
+	max  (0.2 3.75 $spoilerEdge);
+    }
+
+    {
+        name    turbLoc;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceZoneSource_turb;
+        }
+    }
+
+//Starting the face slices
+//Centered at -5
+    {
+        name    faceSlice0;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 -5.5);
+	max  (0.2 3.75 -4.5);
+    }
+
+    {
+        name    turbSlice-5;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice0;
+        }
+    }
+
+//Centered at -4
+    {
+        name    faceSlice1;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 -4.5);
+	max  (0.2 3.75 -3.5);
+    }
+
+    {
+        name    turbSlice-4;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice1;
+        }
+    }
+
+//Centered at -3
+    {
+        name    faceSlice2;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 -3.5);
+	max  (0.2 3.75 -2.5);
+    }
+
+    {
+        name    turbSlice-3;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice2;
+        }
+    }
+//Centered at -2
+    {
+        name    faceSlice3;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 -2.5);
+	max  (0.2 3.75 -1.5);
+    }
+
+    {
+        name    turbSlice-2;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice3;
+        }
+    }
+//Centered at -1
+    {
+        name    faceSlice4;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 -1.5);
+	max  (0.2 3.75 -.5);
+    }
+
+    {
+        name    turbSlice-1;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice4;
+        }
+    }
+//Centered at 0
+    {
+        name    faceSlice5;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 -.5);
+	max  (0.2 3.75 .5);
+    }
+
+    {
+        name    turbSlice0;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice5;
+        }
+    }
+//Centered at 1
+    {
+        name    faceSlice6;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 .5);
+	max  (0.2 3.75 1.5);
+    }
+
+    {
+        name    turbSlice1;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice6;
+        }
+    }
+//Centered at 2
+    {
+        name    faceSlice7;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 1.5);
+	max  (0.2 3.75 2.5);
+    }
+
+    {
+        name    turbSlice2;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice7;
+        }
+    }
+//Centered at 3
+    {
+        name    faceSlice8;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 2.5);
+	max  (0.2 3.75 3.5);
+    }
+
+    {
+        name    turbSlice3;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice8;
+        }
+    }
+//Centered at 4
+    {
+        name    faceSlice9;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 3.5);
+	max  (0.2 3.75 4.5);
+    }
+
+    {
+        name    turbSlice4;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice9;
+        }
+    }
+//Centered at 5
+    {
+        name    faceSlice10;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (0 .75 4.5);
+	max  (0.2 3.75 5.5);
+    }
+
+    {
+        name    turbSlice5;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet faceSlice10;
+        }
+    }
+
+);
+
+// ************************************************************************* //

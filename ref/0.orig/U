@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include 	"include/initialConditions"
+#include 	"../system/aspectRatio"
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform $flowVelocity;
+
+boundaryField
+{
+    
+     #includeEtc "caseDicts/setConstraintTypes"
+
+	inlet
+	{
+		type  codedFixedValue;
+		value $internalField;
+		name ablProfile;
+		
+		code
+		#{
+		const fvPatch& boundaryPatch = patch();
+		const vectorField& Cf = boundaryPatch.Cf();
+		vectorField& field = *this;
+   
+		//These values can change but are what all the models were ran at
+		scalar Ut = 6.37, z0 = 0.017, hb = 13, ht = 15.25; //input values (ht is 2.25 above)
+
+		//The below value SHOULD BE CHANGED BASED ON THE HEIGHT OF YOUR MODEL.
+		//The above input values are set for a building height of 13m. This value should be = Your building height - 13m
+		//For example, since this model is set to an aspect ratio of 1 with a characteristic length of 13m, the building
+		//height is 13m, so it is set to 0. If the aspect ratio was raised to 2, then this value should also raise to 13.
+		//This is in order to shift the inlet profile down as the domain is also shifted down
+		scalar y_diff = 0; 
+
+		forAll(Cf, faceI)
+		{
+			const scalar y = Cf[faceI].y();
+			const scalar Y = max(y+hb+z0+y_diff, 1e-6);  // establishes minimum in case goes below or equal to 0
+			const scalar Ux = (Ut / log( (ht+z0) / z0)) * log(Y/z0);
+			field[faceI] = vector(Ux, 0.0, 0.0);	 
+		} 
+		#};
+			 
+		codeOptions
+		#{
+		-I$(FOAM_SRC)/finiteVolume/lnInclude \
+		-I$(FOAM_SRC)/meshTools/lnInclude
+		#};
+		
+		// codeInclude
+		// #{
+		// #include "fvCFD.H"
+		// #include <cmath>
+		// #include <iostream>
+		// #};
+	}
+
+
+    outlet
+    {
+    	type		inletOutlet;
+   	inletValue 	uniform (0 0 0);
+  	value		$internalField; 
+    }
+
+    leftSide
+    {
+        type            slip;
+    }
+    rightSide
+    {
+        type            slip;
+    }
+    top
+    {
+	type		slip;
+    }
+    ground
+    {
+	type		noSlip;
+    }
+    building
+    {
+        type            noSlip;
+    }
+    spoiler
+    {
+        type            noSlip;
+    }
+  
+}

@@ -1,0 +1,498 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//- To be more comparable to v2406 bug-fix branch disable the
+//- near-wall distance fix (see v2412 release notes about 'Wall distance')
+//OptimisationSwitches
+//{
+//    useCombinedWallPatch    0;
+//}
+#include	"aspectRatio"
+buildingEdge 		#calc "$width * $scalingFactor * .5";
+spoilerEdge		#calc "$buildingEdge - 3";
+
+
+
+application     simpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         4000; 
+
+deltaT          1;
+
+writeControl    timeStep;
+
+writeInterval   1000;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+writeResiduals on;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+libs ( libOpenFOAM
+    libfvMotionSolvers);
+
+functions
+{
+//Finds the total pressure on the spoiler. This can also be done in paraview
+spoilerFieldValue
+{
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (p);
+    operation       areaIntegrate;
+    regionType      patch;
+    name            spoiler;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    useUserTime     true;
+    region          region0;
+    enabled         true;
+    log             true;
+    timeStart       0;
+    timeEnd         4000;
+    executeControl  timeStep;
+    executeInterval 50;
+    writeControl    timeStep;
+    writeInterval   50;
+}
+
+//Includes the sample lines and probes
+	velProfiles
+	{
+		#include "sample"
+	}
+
+//Finds velocity at the center of the turbine
+	turbVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(0 2.25 0)
+        	);
+	}
+
+//Finds the velocity at the edge of the spoiler
+	spoilSideVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(0 2.25 $spoilerEdge)
+        	);
+	}
+
+//Finds velocity 90ft up from the center of the turbine
+	metVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-27.432 2.25 0) // Quick estimate that met tower is ~90 ft in front of container
+        	);
+	}
+
+//Finds velocity 90ft up from the edge of the spoiler
+	spoilUp1SideVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-27.432 2.25 $spoilerEdge)
+        	);
+	}
+
+//Finds velocity 4.6 meters up from the center of the turbine
+	contVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-4.6009 2.25 0)
+        	);
+	}
+
+//Finds velocity 4.6 meters up from the edge of the spoiler
+	spoilUp2SideVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+        	writeControl    		timeStep;
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-4.6009 2.25 $spoilerEdge)
+        	);
+	}
+
+	solverInfo
+	{
+		type				solverInfo;
+		libs				("libsutilityFunctionObjects.so");
+		writeControl			timeStep;
+		writeInterval			1;
+
+		fields
+		(
+			U
+			p
+			k
+			omega
+		);
+	}
+
+//Finds average velocity across the entire turbine (defined by the edges of the spoiler in topoSet)
+  avgTurbineVel
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbLoc;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+//The below avgSliceVel function find average velocity of the meter wide turbine swept area centered at -5 to 5
+  avgSliceVelneg5
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice-5;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+avgSliceVelneg4
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice-4;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+  avgSliceVelneg3
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice-3;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+avgSliceVelneg2
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice-2;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+avgSliceVelneg1
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice-1;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+avgSliceVel0
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice0;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+avgSliceVel1
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice1;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+  avgSliceVel2
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice2;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+avgSliceVel3
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice3;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+avgSliceVel4
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice4;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+avgSliceVel5
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            turbSlice5;
+
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    timeStep;
+    writeInterval   50;
+    }
+
+//Finds the y+ values of all the wall patches
+ 	yPlus1
+ 	{
+ 		type            		yPlus;
+ 		libs 				(fieldFunctionObjects);
+ 		
+ 		enabled				true;
+ 		writeControl    		timeStep;
+ 		writeInterval			50;
+ 		
+ 		patches				(building spoiler ground);
+ 	}
+}
+
+
+
+// ************************************************************************* //
