@@ -12,7 +12,7 @@
 //because the top of the building is always set at y = 0, the inlet U function must be changed to account for it.
 //This is explained more in the 0.orig/U file
 
-//Change these based on desired aspect ratios
+//Change these based on desired aspect ratios. Only have values of X.0 or X.5 (the code currently could cause problems in blockMesh if more complex fractions are used)
 length	1;
 height	1;
 width	1;
