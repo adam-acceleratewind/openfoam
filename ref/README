@@ -2,4 +2,5 @@ This is a reference folder for the Aspect Ratio tests that were ran. This was th
   Each file is well commented and serves as a baseline that should work for whatever aspect ratio is desired.
 
 In order to change the code for a desired case, you need to do the following tasks:
-  First, 
+  * Open the "aspectRatio" file located in the system folder. This includes instructions (reiterated here), as well as the location where the aspect ratio of the building and the characteristic length of the building are modified. It currently is set to an aspect ratio of 1 : 1 : 1 and a characteristic length of 13m. These were chosen to most closely correspond with common building dimensions of ~40ft, 80ft, and 100ft but can be changed. These aspect ratio values should only be changed to increments of .5 as the code could cause issues if they are more complex fractions.  
+  * If you are modifying the aspect ratio value of the width of the building from 1, or wish to modify the spoiler length, a new spoiler.stl file is needed. With the current characteris 
