@@ -1,0 +1,5 @@
+This is a reference folder for the Aspect Ratio tests that were ran. This was the code that was used in all of the tests ran and is easily modifiable for new cases. 
+  Each file is well commented and serves as a baseline that should work for whatever aspect ratio is desired.
+
+In order to change the code for a desired case, you need to do the following tasks:
+  First, 
