@@ -51,7 +51,7 @@ functions
 		type				probes;
 		libs            		("libsampling.so");
     		writeControl    adjustableRunTime;
-    		writeInterval   .005;
+    		writeInterval   500;
 
         	fields          		( U );
 
@@ -66,7 +66,7 @@ functions
 		type				probes;
 		libs            		("libsampling.so");
     		writeControl    adjustableRunTime;
-    		writeInterval   .005;
+    		writeInterval   500;
 
         	fields          		( U );
 
@@ -81,7 +81,7 @@ functions
 		type				probes;
 		libs            		("libsampling.so");
     		writeControl    adjustableRunTime;
-    		writeInterval   .005;
+    		writeInterval   500;
 
         	fields          		( U );
 
@@ -96,7 +96,7 @@ functions
 		type				probes;
 		libs            		("libsampling.so");
     		writeControl    adjustableRunTime;
-    		writeInterval   .005;
+    		writeInterval   500;
 
         	fields          		( U );
 
@@ -111,7 +111,7 @@ functions
 		type				probes;
 		libs            		("libsampling.so");
     		writeControl    adjustableRunTime;
-    		writeInterval   .005;
+    		writeInterval   500;
 
         	fields          		( U );
 
@@ -126,7 +126,7 @@ functions
 		type				probes;
 		libs            		("libsampling.so");
     		writeControl    adjustableRunTime;
-    		writeInterval   .005;
+    		writeInterval   500;
 
         	fields          		( U );
 
@@ -145,7 +145,7 @@ functions
  		
  		enabled				true;
     		writeControl    adjustableRunTime;
-    		writeInterval   .5;
+    		writeInterval   500;
  		
  		patches				(container spoiler ground);
  	}
@@ -177,7 +177,7 @@ functions
     enabled         true;
     log             true;
     writeControl    adjustableRunTime;
-    writeInterval   .005;
+    writeInterval   500;
     }
 
   UpAvgTurbineVelThree
@@ -207,7 +207,7 @@ functions
     enabled         true;
     log             true;
     writeControl    adjustableRunTime;
-    writeInterval   .005;
+    writeInterval   500;
     }
 
   UpAvgTurbineVelFive
@@ -237,7 +237,7 @@ functions
     enabled         true;
     log             true;
     writeControl    adjustableRunTime;
-    writeInterval   .005;
+    writeInterval   500;
     }
 
   UpAvgTurbineVelTen
@@ -267,7 +267,7 @@ functions
     enabled         true;
     log             true;
     writeControl    adjustableRunTime;
-    writeInterval   .05;
+    writeInterval   500;
     }
 
   UpAvgTurbineVelTwenty
@@ -297,7 +297,7 @@ functions
     enabled         true;
     log             true;
     writeControl    adjustableRunTime;
-    writeInterval   .05;
+    writeInterval   500;
     }
 
 }
