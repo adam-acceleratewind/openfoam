@@ -1,0 +1,317 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v10 or later                          |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+startFrom       startTime;
+// startFrom       latestTime;
+
+
+libs
+(
+    "libturbinesFoam.so"
+);
+
+startTime       5000;
+stopAt          endTime;
+endTime         5005;
+
+adjustTimeStep	yes;
+maxCo		2;
+maxDeltaT	.002;
+//Calculated to be ~2 degrees each time step would be .001
+deltaT          .001;
+
+writeControl    adjustableRunTime;
+writeInterval   .1;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+writeResiduals	on;
+
+timeFormat      general;
+timePrecision   8;
+
+runTimeModifiable true;
+
+
+functions
+{
+
+	velProfiles
+	{
+		#include "sample"
+	}
+	
+	turbVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(0 1.108456 0)
+        	);
+	}
+
+	turbSideVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(0 1.108456 1.5)
+        	);
+	}
+	
+	metVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-27.432 1.108456 0) // Quick estimate that met tower is ~90 ft in front of container
+        	);
+	}
+
+	metSideVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-27.432 1.108456 1.5)
+        	);
+	}
+	
+	contVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-4.6009 1.108456 0)
+        	);
+	}
+
+	contSideVelProbe
+	{
+		type				probes;
+		libs            		("libsampling.so");
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
+        	fields          		( U );
+
+        	probeLocations
+        	(
+            		(-4.6009 1.108456 1.5)
+        	);
+	}
+
+	
+
+ 	yPlus1
+ 	{
+ 		type            		yPlus;
+ 		libs 				(fieldFunctionObjects);
+ 		
+ 		enabled				true;
+    		writeControl    adjustableRunTime;
+    		writeInterval   .5;
+ 		
+ 		patches				(container spoiler ground);
+ 	}
+
+  UpAvgTurbineVelOne
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel1Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .005;
+    }
+
+  UpAvgTurbineVelThree
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel3Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .005;
+    }
+
+  UpAvgTurbineVelFive
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel5Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .005;
+    }
+
+  UpAvgTurbineVelTen
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel10Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .05;
+    }
+
+  UpAvgTurbineVelTwenty
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel20Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .05;
+    }
+
+}
+
+// ************************************************************************* //

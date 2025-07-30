@@ -1,0 +1,269 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+turbine
+{
+    type            crossFlowTurbineALSource;
+    active          on;
+
+    crossFlowTurbineALSourceCoeffs
+    {
+        fieldNames          (U);
+        selectionMode       cellSet; // cellSet || points || cellZone
+        cellSet             turbine;
+
+        //Origin at 1.108m set up from container edge
+	origin              (0 1.108 0);
+        axis                (0 0 -1);    // Negative for opposite rotation, forward spin
+
+//Halfsize rotorRadius
+        rotorRadius         0.75;
+
+//Will have to crank this up to 9
+        freeStreamVelocity  (6.37 0 0);
+
+//Paper said that the model started falling off at TSRs >3 and even before then... Ask
+        tipSpeedRatio       3;
+        tsrAmplitude        0.19;       // Amplitude for TSR oscillation. Ask if any preference
+        tsrPhase            1.9;        // Angle of first peak (rad)
+
+//Adds a minimum speed so things don't go haywire
+	minUrel .1;
+
+        dynamicStall
+        {
+            active              on;
+            dynamicStallModel   LeishmanBeddoesSGC;
+            LeishmanBeddoesSGCCoeffs
+            {
+	//NOTE: The parameters are found from the dictionary at beginning of "The Beddoes-Leishman Dynamic Stall Model: .." Melani et al 2024
+	//Checked values for the model were found from "A modified Leishman–Beddoes model for airfoil sections undergoing dynamic stall at low Reynolds numbers" Boutett et al 2020
+	//and from "A Modified Dynamic Stall Model for Low Mach Numbers" Sheng et al 2008
+                Tp          1.7;        // Checked! (Boutet)//Leading Edge Pressure Peak Time Constant
+                Tf          8.2;        // Checked! (Boutet)//Unsteady Boundary Layer Time Constant
+                TAlpha      6.22;	// Checked! (Sheng) // Time constant for variation in angle of attack
+                alphaDS0DiffDeg 2.78;	// Checked! (Sheng) //The alphadso is 17.46. Static 14.68 diff of critical angle for dynamic/static stall
+                r0          0.01;	// ? pitch rate. This should be close enough. Ranges .08-.01 it seems
+                Tv          4;		// Checked! (Boutet)//Leading edge vortex decay constant
+                Tvl         12;		// Checked! (Boutet)//Non dimensional LEV (leading edge vortex) convection time over the airfoil chord
+                B1          0.5;	// ? Indicial function coeff. can range from .14-.68. Boutet said .010 for NACA0018. Unsure, left default
+                eta         0.98;	// ? Efficiency Factor > this personalized to our own turbine
+                E0          0.16;	// ? cavity factor > this personalized to our own turbine                // Uncomment lists below to disable automatic calculations
+                // ReList      (4e4 8e4 1.6e5 3.6e5 7e5 1e6 2e6 5e6);
+                // CNAlphaList (3.2397 4.7255 5.2274 5.6084 5.8048 5.8904 5.9625 6.2771);
+                // CD0List     (0.0232 0.0177 0.0139 0.0111 0.0094 0.0089 0.0082 0.0078);
+                // CN1List     (0.34311 0.57438 0.72628 0.87407 0.97478 1.0264 1.1324 1.2367);
+                // alpha1List  (7.7466 9.0006 10.2013 11.3078 12.1635 12.6109 13.7035 14.0118);
+                // S1List      (0.70707 1.2121 1.8182 2.1212 2.4242 2.5253 2.8283 4.2424);
+                // S2List      (1.5152 2.4242 3.7374 5.1515 5.8586 6.1616 6.6667 6.6667);
+            }
+        }
+
+        flowCurvature
+        {
+            active              on;
+            flowCurvatureModel  Goude; // Goude || MandalBurton
+        }
+
+        blades
+        {
+            blade1
+            {
+                writePerf   true;
+                writeElementPerf true;
+                nElements   30;
+                endEffects  on;
+                elementProfiles (NACA0018);
+                elementData //Will have to double check this to make sure it isn't fully caddywampus
+			    //Also to make sure it's aligned with how ours is set up
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (-1.5 0.75 0.0 0.135 0.5 0.0)
+                    ( 1.5 0.75 0.0 0.135 0.5 0.0)
+                );
+            }
+            blade2
+            {
+                $blade1;
+                writePerf   false;
+                writeElementPerf false;
+                azimuthalOffset 120.0; // Degrees
+            }
+            blade3
+            {
+                $blade1;
+                azimuthalOffset 240.0;
+            }
+        }
+
+	
+        struts
+        {
+	//First ring
+            strut1
+            {
+                writePerf   true;
+                nElements   25;
+                elementProfiles (NACA0018);
+                elementData 
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (-1.5 0.05 0.0 0.1012 0.5 0.0)
+                    (-1.5 0.75 0.0 0.1012 0.5 0.0)
+                );
+            }
+
+	    strut2
+            {
+               $strut1;
+               writePerf   false;
+               azimuthalOffset 120.0; 
+            }
+
+            strut3
+            {
+                $strut1;
+                writePerf   false;
+                azimuthalOffset 240.0;
+            }
+	//Second ring
+            strut4
+            {
+                writePerf   true;
+                nElements   25;
+                elementProfiles (NACA0018);
+                elementData
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (-.5 0.05 0.0 0.1012 0.5 0.0)
+                    (-.5 0.75 0.0 0.1012 0.5 0.0)
+                );
+            }
+
+ 	    strut5
+            {
+               $strut4;
+               writePerf   false;
+               azimuthalOffset 120.0; 
+            }
+
+ 	    strut6
+            {
+               $strut4;
+               writePerf   false;
+               azimuthalOffset 240.0; 
+            }
+
+	 //Third ring
+            strut7
+            {
+                writePerf   true;
+                nElements   25;
+                elementProfiles (NACA0018);
+                elementData
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (.5 0.05 0.0 0.1012 0.5 0.0)
+                    (.5 0.75 0.0 0.1012 0.5 0.0)
+                );
+            }
+
+ 	    strut8
+            {
+               $strut7;
+               writePerf   false;
+               azimuthalOffset 120.0; 
+            }
+
+ 	    strut9
+            {
+               $strut7;
+               writePerf   false;
+               azimuthalOffset 240.0; 
+            }
+	//Annnnd fourth ring
+
+ 	    strut10
+            {
+                writePerf   true;
+                nElements   25;
+                elementProfiles (NACA0018);
+                elementData
+                ( // axialDistance, radius, azimuth, chord, chordMount, pitch
+                    (1.5 0.05 0.0 0.1012 0.5 0.0)
+                    (1.5 0.75 0.0 0.1012 0.5 0.0)
+                );
+            }
+
+ 	    strut11
+            {
+               $strut10;
+               writePerf   false;
+               azimuthalOffset 120.0; 
+            }
+
+ 	    strut12
+            {
+               $strut10;
+               writePerf   false;
+               azimuthalOffset 240.0; 
+            }
+        }
+
+
+        shaft
+        {
+            nElements   10;
+            elementProfiles (cylinder);
+            elementData
+            ( // axialDistance, diameter
+                (-1.5 0.165)
+                ( 1.5 0.165)
+            );
+        }
+
+//Have to change this to turbine blade profile and cylinder profile
+        profileData
+        {
+
+            NACA0018
+		{
+		tableType   multiRe; // multiRe (not singleRe!)
+                
+                ReList // For tableType = multiRe
+                (
+                    #include "../constant/airfoils/NACA0018_multiRe_Re"
+                );
+                clData // For tableType = multiRe
+		        (
+                    #include "../constant/airfoils/NACA0018_multiRe_cl"
+                );
+                cdData // For tableType = multiRe
+		        (
+                    #include "../constant/airfoils/NACA0018_multiRe_cd"
+                );
+		}
+
+
+           
+            cylinder
+            {
+                data ((-180 0 1.108)(180 0 1.108));
+            }
+
+         }
+    }
+}
+
+// ************************************************************************* //

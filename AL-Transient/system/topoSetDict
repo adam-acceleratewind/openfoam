@@ -1,0 +1,163 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    {
+        name 	turbine;
+        type	cellSet;
+        action	new;
+        source	cylinderToCell;
+        sourceInfo
+        {
+            type cylinder; 
+            p1 (0 0 -1.5); 
+            p2 (0 0 1.5); 
+            radius 0.75;
+        }
+    }
+
+    {
+        name    turbine;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo
+        {
+            set turbine;
+        }
+    }
+
+//Sets regions in front of the turbine
+//1 up
+    {
+        name    turbLoc1Up;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (-1.2 0 -1.5);
+	max  (-1 2 1.5);
+    }
+
+    {
+        name    avgVel1Up;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet turbLoc1Up;
+        }
+    }
+
+//3 up
+    {
+        name    turbLoc3Up;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (-3.2 0 -1.5);
+	max  (-3 2 1.5);
+    }
+
+    {
+        name    avgVel3Up;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet turbLoc3Up;
+        }
+    }
+
+//5 up
+    {
+        name    turbLoc5Up;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (-5.2 0 -1.5);
+	max  (-5 2 1.5);
+    }
+
+    {
+        name    avgVel5Up;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet turbLoc5Up;
+        }
+    }
+
+//10 up
+    {
+        name    turbLoc10Up;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (-10.2 0 -1.5);
+	max  (-10 2 1.5);
+    }
+
+    {
+        name    avgVel10Up;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet turbLoc10Up;
+        }
+    }
+
+//20 up
+    {
+        name    turbLoc20Up;
+        type    faceSet;
+        action  new;
+
+        source  boxToFace;
+        min  (-20.2 0 -1.5);
+	max  (-20 2 1.5);
+    }
+
+    {
+        name    avgVel20Up;
+        type    faceZoneSet;
+        action  new;
+
+        source  setToFaceZone;
+        sourceInfo
+        {
+            faceSet turbLoc20Up;
+        }
+    }
+
+);
+
+// ************************************************************************* //
