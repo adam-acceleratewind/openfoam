@@ -41,7 +41,6 @@ runTimeModifiable true;
 
 functions
 {
-
 	velProfiles
 	{
 		#include "sample"
@@ -51,7 +50,9 @@ functions
 	{
 		type				probes;
 		libs            		("libsampling.so");
-        	writeControl    		timeStep;
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
         	fields          		( U );
 
         	probeLocations
@@ -64,7 +65,9 @@ functions
 	{
 		type				probes;
 		libs            		("libsampling.so");
-        	writeControl    		timeStep;
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
         	fields          		( U );
 
         	probeLocations
@@ -77,7 +80,9 @@ functions
 	{
 		type				probes;
 		libs            		("libsampling.so");
-        	writeControl    		timeStep;
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
         	fields          		( U );
 
         	probeLocations
@@ -90,7 +95,9 @@ functions
 	{
 		type				probes;
 		libs            		("libsampling.so");
-        	writeControl    		timeStep;
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
         	fields          		( U );
 
         	probeLocations
@@ -103,7 +110,9 @@ functions
 	{
 		type				probes;
 		libs            		("libsampling.so");
-        	writeControl    		timeStep;
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
         	fields          		( U );
 
         	probeLocations
@@ -116,7 +125,9 @@ functions
 	{
 		type				probes;
 		libs            		("libsampling.so");
-        	writeControl    		timeStep;
+    		writeControl    adjustableRunTime;
+    		writeInterval   .005;
+
         	fields          		( U );
 
         	probeLocations
@@ -125,22 +136,7 @@ functions
         	);
 	}
 
-	solverInfo
-	{
-		type				solverInfo;
-		libs				("libsutilityFunctionObjects.so");
-		writeControl			timeStep;
-		writeInterval			1;
-
-		fields
-		(
-			U
-			p
-			k
-			omega
-		);
-	}
-
+	
 
  	yPlus1
  	{
@@ -148,11 +144,162 @@ functions
  		libs 				(fieldFunctionObjects);
  		
  		enabled				true;
- 		writeControl    		timeStep;
- 		writeInterval			500;
+    		writeControl    adjustableRunTime;
+    		writeInterval   .5;
  		
  		patches				(container spoiler ground);
  	}
+
+  UpAvgTurbineVelOne
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel1Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .005;
+    }
+
+  UpAvgTurbineVelThree
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel3Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .005;
+    }
+
+  UpAvgTurbineVelFive
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel5Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .005;
+    }
+
+  UpAvgTurbineVelTen
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel10Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .05;
+    }
+
+  UpAvgTurbineVelTwenty
+    {
+    // Mandatory entries (unmodifiable)
+    type            surfaceFieldValue;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields          (U);
+    operation       areaAverage;
+    regionType      faceZone;
+    name            avgVel20Up;
+
+    // Optional entries (runtime modifiable)
+    postOperation   none;
+    weightField     alpha1;
+    scaleFactor     1.0;
+    writeArea       false;
+    surfaceFormat   none;
+
+    // Optional (inherited) entries
+    writeFields     false;
+    scalingFactor   1.0;
+    writePrecision  8;
+    writeToFile     true;
+    enabled         true;
+    log             true;
+    writeControl    adjustableRunTime;
+    writeInterval   .05;
+    }
+
 }
 
 // ************************************************************************* //

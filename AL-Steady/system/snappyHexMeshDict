@@ -24,13 +24,13 @@ geometry
     container
     {
         type triSurfaceMesh;
-        file "Container.stl";
+        file "Container.obj";
     }
 	
 	spoiler
     {
         type triSurfaceMesh;
-        file "Spoiler.stl";
+        file "Spoiler.obj";
     }
  
 	refinementBoxOuter

@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-Container.stl
+Container.obj
 {
 	// Extract raw features (none | extractFromFile | extractFromSurface)
     extractionMethod    extractFromSurface;
@@ -41,7 +41,7 @@ Container.stl
 
 }
 
-Spoiler.stl
+Spoiler.obj
 {
 	// Extract raw features (none | extractFromFile | extractFromSurface)
     extractionMethod    extractFromSurface;
