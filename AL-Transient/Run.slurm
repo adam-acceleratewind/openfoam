@@ -9,7 +9,7 @@
 #SBATCH --mail-type BEGIN,END,FAIL    		# Simulation Notification          
 #SBATCH --ntasks-per-node=104  			# number of tasks per node DONT CHANGE 
 #SBATCH --ntasks=104  				# total number of tasks DO CHANGE
-## #SBATCH --qos=high				# sets priority to high (USES 2X AUS)
+## #SBATCH --qos=high/standby			# sets priority to high (USES 2X AUS) or standby (uses no AUs)
 
 cd /scratch/user/directoryLoc
 
