@@ -1,0 +1,9 @@
+This serves as base code for the Actuator Line steady simulation and what was used in the first actuator line study. This code does NOT include any actuator line elements, but is rather the preliminary case to run to get to a steady state condition before implementing the actuator line model.
+The model runs for 5000 time steps with a variety of probes, which is more than sufficient to get to a steady state. This is then used as the initial condition in the transient case (see "AL-Transient/README"). 
+The refinement chosen for the model is specifically to meet the requirements of the actuator line model (with a cell size of about .05m in any dimension in the turbine area) so it shouldn't be too modified, but potential improvements are listed below
+
+Potential Improvements:
+ - The main problem with the refinement is in the turbine region. In forming the mesh, the turbine refinement region travels over both where the blockMesh defines the density of cells before the container and on the actual container (easier to see in a .foam file than describe). Changing the base refinement of either the container blockMesh or upstream blockMesh to have consistently dense cells would help to make the refinement more uniform for the turbine. Make sure to keep the ~.05m dimension in cell sizes though!
+ - The inflation layers/y+ values fall apart a bit where the spoiler meets the building and where the building meets the ground, which causes unreliable data in those regions and potentially cascading effects through the rest of the model. Fixing this would be very nifty for ensuring accuracy of results
+ - The container is established in both the blockMesh and a .obj file. This is a bit repetitive and the code could be brushed up to remove this, although not necessary
+
