@@ -34,7 +34,7 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         4000; 
+endTime         4000;
 
 deltaT          1;
 
@@ -63,50 +63,56 @@ libs ( libOpenFOAM
 
 functions
 {
-//Finds the total pressure on the spoiler. This can also be done in paraview
-spoilerFieldValue
-{
-    // Mandatory entries (unmodifiable)
-    type            surfaceFieldValue;
-    libs            (fieldFunctionObjects);
+	spoilerForce
+	{
+  	  type            forces;
+   	 functionObjectLibs ("libforces.so");
+   	 patches         (spoiler);
+    	// Field names
+   	 p               p;
+   	 U               U;
+	 rho	 	 rhoInf;
+	 rhoInf		 1.225;
 
-    // Mandatory entries (runtime modifiable)
-    fields          (p);
-    operation       areaIntegrate;
-    regionType      patch;
-    name            spoiler;
+    	// Reference pressure [Pa]
+   	 pRef            0;
 
-    // Optional entries (runtime modifiable)
-    postOperation   none;
-    weightField     alpha1;
-    scaleFactor     1.0;
-    writeArea       false;
-    surfaceFormat   none;
+    	// Include porosity effects?
+    	porosity        no;
 
-    // Optional (inherited) entries
-    writeFields     false;
-    scalingFactor   1.0;
-    writePrecision  8;
-    writeToFile     true;
-    useUserTime     true;
-    region          region0;
-    enabled         true;
-    log             true;
-    timeStart       0;
-    timeEnd         4000;
-    executeControl  timeStep;
-    executeInterval 50;
-    writeControl    timeStep;
-    writeInterval   50;
-}
+   	  CofR            (0 0 0); // center of rotation — adjust for your geometry
+  	  log             true;
+    	writeControl    timeStep;
+    	writeInterval   50;
 
-//Includes the sample lines and probes
+	}
+
+	spoilerShearStress
+	{
+   	 // Mandatory entries (unmodifiable)
+   	 type            wallShearStress;
+   	 libs            (fieldFunctionObjects);
+
+    	// Optional entries (runtime modifiable)
+    	patches         (spoiler);
+
+    	// Optional (inherited) entries
+    	writePrecision  8;
+    	writeToFile     true;
+   	 useUserTime     true;
+  	  region          region0;
+   	 enabled         true;
+   	 log             true;
+    	writeControl    timeStep;
+    	writeInterval   50;
+	}
+
+
 	velProfiles
 	{
 		#include "sample"
 	}
-
-//Finds velocity at the center of the turbine
+	
 	turbVelProbe
 	{
 		type				probes;
@@ -120,7 +126,6 @@ spoilerFieldValue
         	);
 	}
 
-//Finds the velocity at the edge of the spoiler
 	spoilSideVelProbe
 	{
 		type				probes;
@@ -133,8 +138,7 @@ spoilerFieldValue
             		(0 2.25 $spoilerEdge)
         	);
 	}
-
-//Finds velocity 90ft up from the center of the turbine
+	
 	metVelProbe
 	{
 		type				probes;
@@ -148,7 +152,6 @@ spoilerFieldValue
         	);
 	}
 
-//Finds velocity 90ft up from the edge of the spoiler
 	spoilUp1SideVelProbe
 	{
 		type				probes;
@@ -161,8 +164,7 @@ spoilerFieldValue
             		(-27.432 2.25 $spoilerEdge)
         	);
 	}
-
-//Finds velocity 4.6 meters up from the center of the turbine
+	
 	contVelProbe
 	{
 		type				probes;
@@ -176,7 +178,6 @@ spoilerFieldValue
         	);
 	}
 
-//Finds velocity 4.6 meters up from the edge of the spoiler
 	spoilUp2SideVelProbe
 	{
 		type				probes;
@@ -206,7 +207,6 @@ spoilerFieldValue
 		);
 	}
 
-//Finds average velocity across the entire turbine (defined by the edges of the spoiler in topoSet)
   avgTurbineVel
     {
     // Mandatory entries (unmodifiable)
@@ -237,7 +237,6 @@ spoilerFieldValue
     writeInterval   50;
     }
 
-//The below avgSliceVel function find average velocity of the meter wide turbine swept area centered at -5 to 5
   avgSliceVelneg5
     {
     // Mandatory entries (unmodifiable)
@@ -479,7 +478,7 @@ avgSliceVel5
     writeInterval   50;
     }
 
-//Finds the y+ values of all the wall patches
+
  	yPlus1
  	{
  		type            		yPlus;
