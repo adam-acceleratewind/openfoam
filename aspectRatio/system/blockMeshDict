@@ -67,14 +67,14 @@ z2          #calc "$z1 + $z_pad";
 //region refinement in snappyHexMesh to keep the mesh sizing consistent between cases
 //The .5s and region refinement can be removed for smaller cases, but I would recommend leaving it for all cases
 //and definitely all cases above a height of 1
-nx1         #calc "100 * $height";   // Number of elements in the upstream direction
-nx2         #calc "30 * $length";   // Number of elements from front of container to back of container
-nx3         #calc "100 * $height";  // Number of elements in the downstream direction
-ny1         #calc "50 * $width";   // Number of elements from container side to domain side
-ny2         #calc "30 * $width";   // Number of elements along front edge of container
-ny3         #calc "50 * $width";	  // Number of elements from container side to domain side
-nz1         #calc "40 * $height";   // Number of elements from ground to container top
-nz2         #calc "60 * $height";  // Number of elements from container top to domain top
+nx1         #calc "100 * $height * .5";   // Number of elements in the upstream direction
+nx2         #calc "30 * $length * .5";   // Number of elements from front of container to back of container
+nx3         #calc "100 * $height * .5";  // Number of elements in the downstream direction
+ny1         #calc "50 * $width * .5";   // Number of elements from container side to domain side
+ny2         #calc "30 * $width * .5";   // Number of elements along front edge of container
+ny3         #calc "50 * $width * .5";	  // Number of elements from container side to domain side
+nz1         #calc "40 * $height * .5";   // Number of elements from ground to container top
+nz2         #calc "60 * $height * .5";  // Number of elements from container top to domain top
 
 vertices
 (
