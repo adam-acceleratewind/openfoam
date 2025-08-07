@@ -1,0 +1,270 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale 1;  // Conversion factor, adjust if needed
+
+// Domain and Building Dimensions
+l_b         100.; 	// Container chord
+w_b         253.32; 	// Container width
+h_bMax      16.15; 	// Container max height
+h_bMin	    14.32;	// Container min height
+
+ridge_height  #calc "$h_bMax - $h_bMin";
+
+// 5H recommended by Franke et al, 3H recommended by Abu-zidan et al
+// Multiplier for domain upstream distance
+l_u	15;
+// 15H recommended by Franke et al, 3H recommended by Abu-zidan et al
+// l_d         15.; // Multiplier for domain downstream distance
+// 5H recommended by Franke et al, 3H recommended by Abu-zidan et al
+// Multiplier for domain width distance, ignored in 2D (5 recommended by Franke et al
+l_w	25;
+// 6H recommended by Franke et al
+// Multiplier for domain height distance, 33X is for blockage ratio of 3% in 2D
+l_h	10;
+// 0.3% recommended by Franke et al, 0.81% recommended by Abu-zidan et al
+
+// Evaluation of Domain Dimensions
+x_pad        #calc "$h_bMax * $l_u";
+y_pad       #calc "$h_bMax * $l_h";
+z_pad       #calc "$h_bMax * $l_w"; //Changed from w_b to h_b
+
+// Evaluation of Vertex Positions
+x0          #calc "-$x_pad";
+x1          0;
+x2          #calc "$l_b";
+
+y0          #calc "-$h_bMin";
+y1          0;
+y2	    #calc "$y1 + $ridge_height";
+y3          #calc "$y2 + $y_pad";
+
+z0          #calc "-$w_b / 2 - $z_pad";
+z1          #calc "-$w_b / 2";
+z2	    0;
+z3	    #calc "$z1 + $w_b";
+z4	    #calc "$z3 + $z_pad";
+
+//Normalizers to account for different sized domains to maintain consistency
+normalx	    #calc "$l_u / 8";
+normaly	    #calc "$l_h / 6";
+normalz	    #calc "$l_w / 10";
+
+nx1         #calc "$normalx * 150";  	 // Number of elements in the upstream direction
+nx2         150;  	 // Number of elements from front of container to back of container
+ny1         50;  	 // Number of elements from ground to container top
+ny2         #calc "$normaly * 78";  	 // Number of elements from container top to domain top
+nz1         #calc "$normalz * 80";  	 // Number of elements from container side to domain side
+nz2         150;  	 // Number of elements along half of front edge of container
+nz3         #calc "$normalz * 80";	 	 // Number of elements from container side to domain side
+
+vertices
+(
+    ($x0 $y0 $z4)  // 0
+    ($x1 $y0 $z4)  // 1
+    ($x2 $y0 $z4)  // 2
+    ($x0 $y1 $z4)  // 3
+    ($x1 $y1 $z4)  // 4
+    ($x2 $y1 $z4)  // 5
+    ($x0 $y3 $z4)  // 6
+    ($x1 $y3 $z4)  // 7
+    ($x2 $y3 $z4)  // 8
+
+    ($x0 $y0 $z3)  // 9
+    ($x1 $y0 $z3)  // 10
+    ($x2 $y0 $z3)  // 11
+    ($x0 $y1 $z3)  // 12
+    ($x1 $y1 $z3)  // 13
+    ($x2 $y1 $z3)  // 14
+    ($x0 $y3 $z3)  // 15
+    ($x1 $y3 $z3)  // 16
+    ($x2 $y3 $z3)  // 17
+
+    ($x0 $y0 $z2)  // 18
+    ($x1 $y0 $z2)  // 19
+
+//This is the ridge here
+    ($x0 $y2 $z2)  // 20
+    ($x1 $y1 $z2)  // 21 (unused. keeps indexing consistent)
+    ($x1 $y2 $z2)  // 22
+    ($x2 $y2 $z2)  // 23
+
+    ($x0 $y3 $z2)  // 24
+    ($x1 $y3 $z2)  // 25
+    ($x2 $y3 $z2)  // 26
+
+    ($x0 $y0 $z1)  // 27
+    ($x1 $y0 $z1)  // 28
+    ($x2 $y0 $z1)  // 29
+    ($x0 $y1 $z1)  // 30
+    ($x1 $y1 $z1)  // 31
+    ($x2 $y1 $z1)  // 32
+    ($x0 $y3 $z1)  // 33
+    ($x1 $y3 $z1)  // 34
+    ($x2 $y3 $z1)  // 35
+
+    ($x0 $y0 $z0)  // 36
+    ($x1 $y0 $z0)  // 37
+    ($x2 $y0 $z0)  // 38
+    ($x0 $y1 $z0)  // 39
+    ($x1 $y1 $z0)  // 40
+    ($x2 $y1 $z0)  // 41
+    ($x0 $y3 $z0)  // 42
+    ($x1 $y3 $z0)  // 43
+    ($x2 $y3 $z0)  // 44
+	
+);
+
+edges
+(
+);
+
+// Currently using simplified scaling, where there is only a single bias in each hex
+x_up        	0.25;
+x_down        	4;
+y_top        	8;
+y_bottom      	1;
+z_side1		8; //was 5 and .2
+z_side2		.125;
+
+blocks
+(
+	hex (9 10 13 12 0 1 4 3) ($nx1 $ny1 $nz1) simpleGrading ( $x_up $y_bottom $z_side1) 		//0
+	hex (10 11 14 13 1 2 5 4) ($nx2 $ny1 $nz1) simpleGrading ( $x_down   $y_bottom  $z_side1) 	//1
+	hex (12 13 16 15 3 4 7 6) ($nx1 $ny2 $nz1) simpleGrading ( $x_up $y_top $z_side1) 		//2
+	hex (13 14 17 16 4 5 8 7) ($nx2 $ny2 $nz1) simpleGrading ( $x_down   $y_top $z_side1)		//3
+	
+	hex (18 19 22 20 9 10 13 12) ($nx1 $ny1 $nz2) simpleGrading ($x_up $y_bottom 1) 		//4 
+	hex (20 22 25 24 12 13 16 15) ($nx1 $ny2 $nz2) simpleGrading ($x_up $y_top 1) 			//5
+	hex (22 23 26 25 13 14 17 16) ($nx2 $ny2 $nz2) simpleGrading ($x_down $y_top 1) 		//6
+	
+	hex (27 28 31 30 18 19 22 20) ($nx1 $ny1 $nz2) simpleGrading ($x_up $y_bottom 1) 		//7
+	hex (30 31 34 33 20 22 25 24) ($nx1 $ny2 $nz2) simpleGrading ($x_up $y_top 1) 			//8
+	hex (31 32 35 34 22 23 26 25) ($nx2 $ny2 $nz2) simpleGrading ($x_down $y_top 1) 		//9
+	
+	hex (36 37 40 39 27 28 31 30) ($nx1 $ny1 $nz3) simpleGrading ( $x_up $y_bottom  $z_side2) 	//10
+	hex (37 38 41 40 28 29 32 31) ($nx2 $ny1 $nz3) simpleGrading ( $x_down $y_bottom $z_side2) 	//11
+	hex (39 40 43 42 30 31 34 33) ($nx1 $ny2 $nz3) simpleGrading ( $x_up   $y_top  $z_side2) 	//12
+	hex (40 41 44 43 31 32 35 34) ($nx2 $ny2 $nz3) simpleGrading ( $x_down   $y_top $z_side2) 	//13
+);
+
+
+
+boundary
+(
+    inlet
+    {
+        type patch; 
+        faces
+        (
+	    (0 3 12 9)
+            (3 6 15 12)
+            (9 12 20 18)
+            (12 15 24 20)
+            (18 20 30 27)
+            (20 24 33 30)
+	    (27 30 39 36)
+	    (30 33 42 39)
+        );
+    }
+ 
+    outlet
+    {
+        type patch;  
+        faces
+        (
+            (2 11 14 5)
+            (5 14 17 8)
+            (14 23 26 17)
+            (23 32 35 26)
+            (29 38 41 32)
+	    (32 41 44 35)
+        );
+    }
+
+    building
+    {
+        type wall; 
+        faces
+        (
+	    (10 13 14 11)
+            (10 19 22 13)
+	    (19 28 31 22)
+	    (28 29 32 31)
+//Roof
+	    (14 13 22 23)
+	    (22 31 32 23)
+        );
+    }
+ 
+     ground
+	{
+	type wall;
+	faces
+	(
+	    (0 9 10 1)
+            (1 10 11 2)
+            (9 18 19 10)
+            (18 27 28 19)
+            (27 36 37 28)
+	    (28 37 38 29)
+	);
+	}
+ 
+     top
+   	{
+        type patch;  
+        faces
+        (
+	    (6 7 16 15)
+            (7 8 17 16)
+            (15 16 25 24)
+            (16 17 26 25)
+            (24 25 34 33)
+	    (25 26 35 34)
+            (33 34 43 42)
+	    (34 35 44 43)
+        );
+    }
+ 
+     leftSide
+    	{
+        type patch;  
+        faces
+        (
+	    (0 1 4 3)
+            (1 2 5 4)
+            (3 4 7 6)
+            (4 5 8 7)
+        );
+    	}
+ 
+     rightSide
+    	{
+        type patch;  
+        faces
+        (
+            (36 39 40 37)
+            (37 40 41 38)
+            (39 42 43 40)
+            (40 43 44 41)
+        );
+    	}
+);
+
+mergePatchPairs
+(
+);
