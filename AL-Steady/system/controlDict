@@ -41,6 +41,50 @@ runTimeModifiable true;
 
 functions
 {
+	spoilerForce
+	{
+  	  type            forces;
+   	 libs ("libforces.so");
+   	 patches         (spoiler);
+    	// Field names
+   	 p               p;
+   	 U               U;
+	 rho	 	 rhoInf;
+	 rhoInf		 1.225;
+
+    	// Reference pressure [Pa]
+   	 pRef            0;
+
+    	// Include porosity effects?
+    	porosity        no;
+
+   	  CofR            (0 0 0); // center of rotation — adjust for your geometry
+  	  log             true;
+    	writeControl    timeStep;
+    	writeInterval   50;
+
+	}
+
+	spoilerShearStress
+	{
+   	 // Mandatory entries (unmodifiable)
+   	 type            wallShearStress;
+   	 libs            (fieldFunctionObjects);
+
+    	// Optional entries (runtime modifiable)
+    	patches         (spoiler);
+
+    	// Optional (inherited) entries
+    	writePrecision  8;
+    	writeToFile     true;
+   	 useUserTime     true;
+  	  region          region0;
+   	 enabled         true;
+   	 log             true;
+    	writeControl    timeStep;
+    	writeInterval   50;
+	}
+
 	velProfiles
 	{
 		#include "sample"
