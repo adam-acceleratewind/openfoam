@@ -5,7 +5,7 @@
 #SBATCH --job-name=VestaRun		        # name of job              
 #SBATCH --nodes=2           			# number of nodes DO CHANGE          
 #SBATCH --account=accelerate           		# project allocation          
-#SBATCH --mail-user ike@acceleratewind.com   	# User's email          
+#SBATCH --mail-user user@acceleratewind.com   	# User's email          
 #SBATCH --mail-type BEGIN,END,FAIL    		# Simulation Notification          
 #SBATCH --ntasks-per-node=104  			# number of tasks per node DONT CHANGE 
 #SBATCH --ntasks=104  				# total number of tasks DO CHANGE
