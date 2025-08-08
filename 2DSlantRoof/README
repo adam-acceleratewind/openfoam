@@ -1,0 +1,1 @@
+Basic 2D case of a building with an adjustable slanted roof. The code should all be spick and span, so that the slope of the roof only needs to be modified in blockMesh by adjusting the height (more notation in blockMesh). The geoemtry of the blockMesh is also drawn out in the diagram image also included in the directory
