@@ -1,0 +1,61 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    class           dictionary;
+	object			sample;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include	"aspectRatio"
+buildingEdge 		#calc "$width * $scalingFactor * .5";
+spoilerEdge		#calc "$buildingEdge - 3";
+
+type            sets;
+libs            ("libsampling.so");
+writeControl    writeTime;
+interpolationScheme cellPoint;
+setFormat       raw;
+
+fields          ( U );
+sets
+(
+//Line sweeping crossflow in the +y over the turb velocity at the center
+    turbVel
+    {
+        type            uniform;
+        axis            y;
+        start           (0 0.75 0);
+        end             (0 3.75 0);
+	nPoints		100;
+    }
+
+//Line sweeping in the flow direction, +x, at the turb center
+    turbHeightVel
+    {
+        type            uniform;
+        axis            x;
+        start           (-38.86199951171875 2.25 0);
+        end             (20 2.25 0);
+	nPoints		600;
+    }
+
+//Line sweeping in the flow direction, +x, at the spoiler edge
+    turbSideHeightVel
+    {
+        type            uniform;
+        axis            x;
+        start           (-38.86199951171875 2.25 $spoilerEdge);
+        end             (20 2.25 $spoilerEdge);
+	nPoints		600;
+    }
+	
+);
+
+// ************************************************************************* //
