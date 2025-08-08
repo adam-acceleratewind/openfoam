@@ -1,0 +1,24 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+// IMPORTANT!! The spoiler has to be modified to fit the building size, preferably with 3m of buffer to each side
+//In the spoilers folder, a 7m, 12m, 13.5m, 20m, 26m, and 33m spoiler stl are included. The file must be put into
+//the constant folder and named "spoiler.stl" and it must be centered at 0,0,0 in the proper orientation
+//Also important: the 0.orig files are specifically set up to have a uniform inlet velocity between all cases. However,
+//because the top of the building is always set at y = 0, the inlet U function must be changed to account for it.
+//This is explained more in the 0.orig/U file
+
+//Change these based on desired aspect ratios
+length	1;
+height	1;
+width	1;
+
+//Modifiable scaling factor (in meters). Change if want smaller/larger domain. Change 0.orig/U file accordingly (see above)
+//13 meters was chosen because an aspect ratio of 1, 2, and 2.5 are ~40ft, ~80ft, and ~100ft respectively
+scalingFactor	13;
+
+// ************************************************************************* //
