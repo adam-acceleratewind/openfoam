@@ -1,0 +1,207 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 1;  // Conversion factor, adjust if needed
+
+// Domain and Building Dimensions
+l_b         30.48; 	// Container chord
+// w_b         6.0960;  // Container width, ignored in 2D
+h_b         15.24;     // Container height
+l_u         15.; 		// Multiplier for domain upstream distance
+l_d         20.; 		// Multiplier for domain downstream distance
+// l_w         6.; 		// Multiplier for domain width distance, ignored in 2D
+l_h         33.; 		// Multiplier for domain height distance, 33X is for blockage ratio of 3% in 2D
+
+// Evaluation of Domain Dimensions
+x_up        #calc "$h_b * $l_u";
+x_down      #calc "$h_b * $l_d";
+y_pad       #calc "$h_b * $l_h";
+// z_pad       #calc "$h_b * $l_w"; // Ignored in 2D
+
+// Evaluation of Vertex Positions
+x0          #calc "-$x_up";
+x1          0;
+x2          #calc "$l_b";
+x3          #calc "$x2 + $x_down";
+
+z0          #calc ".1";
+z1          #calc ".35";
+
+y0          #calc "-$h_b";
+y1          0;
+y2          #calc "$y1 + $y_pad";
+
+nx1         140;  // Number of elements in the upstream direction
+nx2         75;   // Number of elements from front of container to back of container
+nx3         150; // Number of elements in the downstream direction
+nz1         1;
+ny1         40;  // #calc "$nx2 * 3"; // Number of elements below container
+ny2         220; // #calc "$ny1 * 15"; // Number of elements above container
+
+vertices
+(
+    ($x0 $y0 $z0)  //  0
+    ($x1 $y0 $z0)  //  1
+    ($x2 $y0 $z0)  //  2
+    ($x3 $y0 $z0)  //  3
+    ($x0 $y0 $z1)  //  4
+    ($x1 $y0 $z1)  //  5
+    ($x2 $y0 $z1)  //  6
+    ($x3 $y0 $z1)  //  7
+
+    ($x0 $y1 $z0)  //  8
+    ($x1 $y1 $z0)  //  9
+    ($x2 $y1 $z0)  //  10
+    ($x3 $y1 $z0)  //  11
+    ($x0 $y1 $z1)  //  12
+    ($x1 $y1 $z1)  //  13
+    ($x2 $y1 $z1)  //  14
+    ($x3 $y1 $z1)  //  15
+        
+    ($x0 $y2 $z0)  //  16
+    ($x1 $y2 $z0)  //  17
+    ($x2 $y2 $z0)  //  18
+    ($x3 $y2 $z0)  //  19
+    ($x0 $y2 $z1)  //  20
+    ($x1 $y2 $z1)  //  21
+    ($x2 $y2 $z1)  //  22
+    ($x3 $y2 $z1)  //  23
+);
+
+edges
+(
+);
+
+// Mesh Scaling Parameters
+
+// These are advanced controls for biasing that we will not use right now
+// ((x1 x2 x3)(y1 y2 y3)(z1 z2 z3))
+// x_up      ((0.5 0.3 0.2)(0.2 0.2 0.6)(1 1 1));
+// x_down    ((0.1 0.2 0.7)(0.2 0.2 0.6)(1 1 1));
+// y_top   ((0.1 0.1 0.8)(0.1 0.1 0.8)(1 1 1));
+// y_bottom  ((0.3 0.3 0.4)(0.3 0.3 0.4)(1 1 1));
+
+// Currently using simplified scaling, where there is only a single bias in each hex
+x_up        0.125;
+x_down        4;
+y_top        8;
+y_bottom      1;
+
+blocks
+(
+ // Block upstream of the container
+    hex (0 1 9 8 4 5 13 12) ($nx1 $ny1 $nz1) simpleGrading ($x_up $y_bottom 1)
+
+    // Block downstream of the container
+    hex (2 3 11 10 6 7 15 14) ($nx3 $ny1 $nz1) simpleGrading ($x_down $y_bottom 1)
+
+    // Block above the upstream region
+    hex (8 9 17 16 12 13 21 20) ($nx1 $ny2 $nz1) simpleGrading ($x_up $y_top 1)
+
+    // Block above the downstream region
+    hex (10 11 19 18 14 15 23 22) ($nx3 $ny2 $nz1) simpleGrading ($x_down $y_top 1)
+ 
+	// Block above the container or building
+    hex (9 10 18 17 13 14 22 21) ($nx2 $ny2 $nz1) simpleGrading (1 $y_top 1)
+ 
+	// Block of container or building
+    // hex (1 2 10 9 5 6 14 13) (1 1 1) simpleGrading (1 1 1)
+);
+
+boundary
+(
+    inlet
+    {
+        type patch; 
+        faces
+        (
+			(0 8 12 4)  // Front face upstream
+            (8 16 20 12) // Top face upstream
+        );
+    }
+ 
+    outlet
+    {
+        type patch;  
+        faces
+        (
+			(3 11 15 7)    // Back face downstream
+            (11 19 23 15)  // Top face downstream
+        );
+    }
+
+    building
+    {
+        type wall; 
+        faces
+        (
+			(1 9 13 5)     // Front face of container
+            (9 10 14 13)   // Top face of container
+            (2 10 14 6)    // Back face of container
+        );
+    }
+ 
+	ground
+	{
+		type wall;
+		faces
+		(
+			(0 1 5 4)      // Ground upstream
+            (2 3 7 6)      // Ground downstream
+		);
+	}
+ 
+	top
+    {
+        type patch;  
+        faces
+        (
+			(16 17 21 20)  // Top face upstream
+            (17 18 22 21)  // Top face above container
+            (18 19 23 22)  // Top face downstream
+        );
+    }
+ 
+	leftSide
+    {
+        type patch;  
+        faces
+        (
+			(0 1 9 8)      // Upstream bottom face
+			(8 9 17 16)    // Upstream top face
+			(9 10 18 17)   // Above container face
+			(2 3 11 10)    // Downstream bottom face
+			(10 11 19 18)  // Downstream top face
+        );
+    }
+ 
+	rightSide
+    {
+        type patch;  
+        faces
+        (
+			(4 5 13 12)    // Upstream bottom face
+			(12 13 21 20)  // Upstream top face
+			(13 14 22 21)  // Above container face
+			(6 7 15 14)    // Downstream bottom face
+			(14 15 23 22)  // Downstream top face
+        );
+    }
+);
+
+mergePatchPairs
+(
+);

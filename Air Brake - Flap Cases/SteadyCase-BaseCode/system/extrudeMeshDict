@@ -1,0 +1,46 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      extrudeMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+constructFrom patch;
+
+// "." specifies the current directory
+sourceCase ".";
+
+// Specify the patch source which you will extrude
+sourcePatches (leftSide);
+
+// Specify the mirror patch opposite to the patch being extruded
+exposedPatchName rightSide;
+
+flipNormals false;
+
+extrudeModel linearDirection;
+
+// If 2D is desired, then this should be specified as 1 layer
+nLayers 1;
+
+linearDirectionCoeffs
+{
+ direction (0 0 -1);
+ 
+ // For convenience during normalized it is recommended to use a thickness of 1
+ thickness 1;
+}
+
+mergeFaces false;
+
+// Merge small edges. Fraction of bounding box.
+mergeTol 0;

@@ -1,0 +1,134 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v10 or later                          |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     	pimpleFoam;
+startFrom       	startTime;
+// startFrom       latestTime;
+
+startTime       	5000;
+stopAt          	endTime;
+endTime         	5010;
+	
+adjustTimeStep	yes;
+maxCo		2; //Was 2
+maxDeltaT	.001;
+deltaT          .00075;
+
+writeControl    adjustableRunTime;
+writeInterval   .2;
+	
+purgeWrite      	0;
+	
+writeFormat     	ascii;
+writePrecision  	6;
+writeCompression 	off;
+writeResiduals		on;
+
+timeFormat      	general;
+timePrecision   	6;
+
+runTimeModifiable 	true;
+
+functions
+{
+	velProfiles
+	{
+		#include "sample"
+	}
+	
+	turbVelProbe
+	{
+		type					probes;
+		libs            		("libsampling.so");
+        writeControl    		timeStep;
+        fields          		( U );
+
+        probeLocations
+        (
+            (0.790 2.318 -0.5)
+        );
+	}
+	
+	metVelProbe
+	{
+		type					probes;
+		libs            		("libsampling.so");
+        writeControl    		timeStep;
+        fields          		( U );
+
+        probeLocations
+        (
+            (-27.432 2.318 -0.5) // Quick estimate that met tower is ~90 ft in front of container
+        );
+	}
+	
+	contVelProbe
+	{
+		type					probes;
+		libs            		("libsampling.so");
+        writeControl    		timeStep;
+        fields          		( U );
+
+        probeLocations
+        (
+            (-4.6009 2.318 -0.5)
+        );
+	}
+
+    solverInfo
+    {
+        type        			solverInfo;
+        libs        			("libutilityFunctionObjects.so");
+        writeControl   			timeStep;
+        writeInterval  			1;
+		
+		fields
+        (
+            U
+            p
+            k
+            omega
+        );
+    }
+	
+	yPlus1
+	{
+		type            		yPlus;
+		libs	 				("libfieldFunctionObjects.so");
+				
+		enabled					true;
+    		writeControl    adjustableRunTime;
+    		writeInterval   .2;
+	}
+	wallShearStress1
+	{
+    // Mandatory entries (unmodifiable)
+    type            wallShearStress;
+    libs            (fieldFunctionObjects);
+
+    // Optional entries (runtime modifiable)
+    patches         (flap spoiler_lower_front spoiler_lower_top spoiler_upper_front spoiler_upper_top);
+
+    // Optional (inherited) entries
+    writePrecision  6;
+    writeToFile     true;
+    useUserTime     true;
+    enabled         true;
+    writeControl    adjustableRunTime;
+    writeInterval   .2; }
+}
+
+// ************************************************************************* //

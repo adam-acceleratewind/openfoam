@@ -1,0 +1,38 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+application="$(getApplication)"
+
+# Disable ptrace_scope temporarily for the contiguous memory allocator (CMA)
+# echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+
+# Create log folders
+mkdir -p log
+
+# Generate background mesh
+runApplication blockMesh
+mv log.blockMesh log/blockMesh.log
+
+# Extract edges from STL for better geometry meshing
+runApplication surfaceFeatureExtract
+mv log.surfaceFeatureExtract log/surfaceFeatureExtract.log
+
+# Generate geometry mesh of STL
+runApplication snappyHexMesh -overwrite
+mv log.snappyHexMesh log/snappyHexMesh.log
+
+# Convert to a 2D mesh
+runApplication extrudeMesh
+mv log.extrudeMesh log/extrudeMesh.log
+
+# Modify boundaries to empty (used for 2D meshes)
+sed -i '/leftSide/,/}/{/type/ s/patch/empty/}' constant/polyMesh/boundary
+sed -i '/rightSide/,/}/{/type/ s/patch/empty/}' constant/polyMesh/boundary
+
+# Re-enable ptrace_scope
+# echo 1 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+
+#------------------------------------------------------------------------------

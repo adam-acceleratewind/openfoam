@@ -1,0 +1,148 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+
+    pcorr
+    {
+        solver          GAMG;
+        tolerance       1e-5; //From 1e-5
+        relTol          0.01; //From .01
+
+        smoother        GaussSeidel;
+	maxIter		100; 
+    }
+
+    p
+    {
+        $pcorr;
+        tolerance       1e-5; //From 1e-5
+	relTol          0.01; //From .01
+
+    }
+
+    pFinal
+    {
+        $p;
+        relTol          0;
+    }
+
+   U
+    {
+        solver      GAMG;
+    	smoother    GaussSeidel;
+        tolerance   1e-5; //From 1e-5
+        relTol      0.1;
+	maxIter		50;
+    }
+
+    UFinal
+    {
+        $U;
+        relTol      0;
+    }
+
+    k
+    {
+        solver      GAMG;
+        smoother    GaussSeidel;
+        tolerance   1e-5; //From 1e-5
+        relTol      0.1;
+	maxIter		50;
+    }
+
+    kFinal
+    {
+        $k;
+        relTol      0;
+    }
+
+    omega
+    {
+        solver      GAMG;
+        smoother    GaussSeidel;
+        tolerance   1e-5; //From 1e-5
+        relTol      0.1;
+	maxIter		50; 
+    }
+
+    omegaFinal
+    {
+        $omega;
+        relTol      0;
+    }
+
+    nut
+    {
+        solver      GAMG;
+        smoother    GaussSeidel;
+        tolerance   1e-5; //From 1e-5
+        relTol      0.1;
+	maxIter		50; 
+    }
+
+    nutFinal
+    {
+        $nut;
+        relTol      0;
+    }
+
+}
+
+PIMPLE
+{
+    nOuterCorrectors    5;
+    nCorrectors         2;
+    nNonOrthogonalCorrectors 1;
+    turbOnFinalIterOnly no;
+
+    residualControl
+    {
+         U
+           {
+            tolerance 1e-5; //From 1e-5
+            relTol 0;
+            }
+        p
+        {
+            tolerance 5e-4;
+            relTol 0;
+        }
+
+    }
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p   .7;
+	pFinal 1;
+     }
+    equations
+    {
+        "(U|k|omega)"      .7;
+        "(U|k|omega)Final" 1;
+    }
+}
+
+cache
+{
+    grad(U);
+}
+
+// ************************************************************************* //

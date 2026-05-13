@@ -1,0 +1,19 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+application="$(getApplication)"
+
+# Disable ptrace_scope temporarily for the contiguous memory allocator (CMA)
+# echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+
+# Run the case
+runApplication mpiexec simpleFoam -postProcess -latestTime -func wallShearStress
+mv log.mpiexec log/mpiexec.log
+
+# Re-enable ptrace_scope
+# echo 1 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+
+#------------------------------------------------------------------------------
